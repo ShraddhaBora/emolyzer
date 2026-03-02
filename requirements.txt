@@ -6,4 +6,3 @@ joblib
 numpy
 python-multipart
 nltk
-recharts
