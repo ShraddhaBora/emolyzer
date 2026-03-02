@@ -113,12 +113,17 @@ def _load_cached_model() -> bool:
     try:
         pipeline = joblib.load(_PIPELINE_PATH)
         meta     = joblib.load(_METADATA_PATH)
+        
+        # Always reload the full dataset from disk for EDA tools/distribution
+        df, dataset_meta = load_and_validate()
+        _state["df"]       = df
+        _state["metadata"] = dataset_meta
+        
+        # Other champion model details from cache
         _state["champion_pipeline"] = pipeline
         _state["champion_name"]     = meta["champion_name"]
         _state["cv_results"]        = meta["cv_results"]
         _state["eval_result"]       = meta["eval_result"]
-        _state["df"]                = meta["df"]
-        _state["metadata"]          = meta["metadata"]
         return True
     except Exception as exc:
         print(f"Warning: cached model could not be loaded ({exc}) — retraining…")

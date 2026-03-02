@@ -1,5 +1,5 @@
 /* hooks/useApi.js — Thin API client */
-const BASE = ''
+const BASE = import.meta.env.DEV ? 'http://localhost:8000' : '';
 
 export async function apiPredict(text) {
     const res = await fetch(`${BASE}/predict`, {

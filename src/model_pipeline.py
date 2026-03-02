@@ -302,7 +302,7 @@ def _get_synonyms(word: str) -> set:
 def _normalize_oov_tokens(text: str, vocab: dict) -> str:
     """
     Attempts to normalize an unknown text sequence by:
-    1. Looking up direct match in vocab.
+    1. Looking up direct match in vocab (FAST EXIT).
     2. Squashing elongated characters (e.g. 'loovveee' -> 'love')
     3. Checking for spelling corrections against common words.
     4. Looking up synonyms via WordNet that exist in the training vocabulary.
@@ -311,6 +311,12 @@ def _normalize_oov_tokens(text: str, vocab: dict) -> str:
     tokens = text.split()
     result = []
     
+    # 0. Check if entire text features are already in vocab (Very Fast Exit)
+    # If most tokens are known, we can skip the heavy per-token logic
+    known_count = sum(1 for t in tokens if _re.sub(r"[^\w]", "", t).lower() in vocab)
+    if known_count == len(tokens):
+        return text
+
     spell = _get_spellchecker()
     
     for token in tokens:
@@ -320,7 +326,7 @@ def _normalize_oov_tokens(text: str, vocab: dict) -> str:
             result.append(token)
             continue
             
-        # 1. Direct match
+        # 1. Direct match (Fast per-token Exit)
         if bare in vocab:
             result.append(token)
             continue
@@ -334,6 +340,11 @@ def _normalize_oov_tokens(text: str, vocab: dict) -> str:
         
         # 3. Spelling correction
         if spell:
+            # Check if squashed is in vocab before heavy spellcorrection
+            if squashed in vocab:
+                result.append(squashed)
+                continue
+                
             corr_bare = spell.correction(bare)
             if corr_bare:
                 candidates.append(corr_bare)
@@ -352,7 +363,7 @@ def _normalize_oov_tokens(text: str, vocab: dict) -> str:
         if found_in_vocab:
             continue
             
-        # 4. Synonym Search
+        # 4. Synonym Search (Extremely slow - only if others fail)
         all_to_check = set([bare] + candidates)
         found_synonym = False
         
@@ -379,16 +390,22 @@ def _augment_with_synonyms(text: str, vocab: dict) -> str:
     """
     For each token in `text` that exists in the TF-IDF vocabulary, look up its
     WordNet synonyms and inject those that also exist in the vocabulary.
-    For NOT_<word> tokens, look up antonyms of <word> and inject them.
     This gives the classifier richer signal at inference time.
+    
+    OPTIMIZATION: Skip if text is too long (NLTK is heavy) or if certain tokens
+    already provide a very high signal.
     """
     import re as _re
+    
+    tokens = text.split()
+    if len(tokens) > 20: # Threshold: Don't augment long sentences for speed
+        return text
+
     try:
         from nltk.corpus import wordnet
     except Exception:
         return text   # NLTK not available — skip silently
 
-    tokens = text.split()
     extras = []
 
     for token in tokens:
@@ -406,6 +423,7 @@ def _augment_with_synonyms(text: str, vocab: dict) -> str:
                             ant_word = ant.name().lower().replace("_", "")
                             if ant_word in vocab and ant_word not in extras:
                                 extras.append(ant_word)
+                                if len(extras) > 10: break # Cap extras per sentence
             except Exception:
                 pass
         else:
@@ -418,8 +436,10 @@ def _augment_with_synonyms(text: str, vocab: dict) -> str:
                         syn_word = lemma.name().lower().replace("_", "")
                         if syn_word in vocab and syn_word != bare and syn_word not in extras:
                             extras.append(syn_word)
+                            if len(extras) > 10: break # Cap extras per sentence
             except Exception:
                 pass
+        if len(extras) > 30: break # Absolute cap to prevent slowdown
 
     if extras:
         return text + " " + " ".join(extras)
