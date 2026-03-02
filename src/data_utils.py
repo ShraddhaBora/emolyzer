@@ -11,7 +11,9 @@ import numpy as np
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
-DATASET_PATH = r"C:\Users\works\Desktop\emolyzer\merged_text.csv"
+# Build path relative to this file's directory
+_BASE = os.path.dirname(os.path.abspath(__file__))
+DATASET_PATH = os.path.join(os.path.dirname(_BASE), "merged_text.csv")
 
 REQUIRED_COLUMNS = {"text", "label"}
 

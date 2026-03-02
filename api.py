@@ -23,6 +23,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pandas as pd
 import joblib
+import nltk
 from fastapi import FastAPI, HTTPException, UploadFile, File, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -70,6 +71,13 @@ _retrain_lock = threading.Lock()
 
 @app.on_event("startup")
 def startup_event():
+    # Ensure NLTK data is available for model_pipeline preprocessing
+    try:
+        nltk.download('wordnet', quiet=True)
+        nltk.download('omw-1.4', quiet=True)
+    except Exception as e:
+        print(f"Warning: NLTK download failed ({e}) — app may still run but synonyms/antonyms might fail.")
+
     if _load_cached_model():
         print("Cached model loaded successfully — skipping training.")
     else:
