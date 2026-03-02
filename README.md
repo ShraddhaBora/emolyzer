@@ -1,55 +1,41 @@
 # Emolyzer
 
-Emolyzer is an emotion analysis application built with Streamlit. It uses machine learning models to analyze and predict emotions from text input.
+Emolyzer is an advanced emotion analysis platform that leverages a multi-model NLP pipeline to classify text into core emotional states. Built with a React frontend and a FastAPI backend, it provides a research-grade interface for real-time sentiment extraction.
 
-## Features
+## ✨ Features
 
-* **Interactive Interface:** A beautiful, pastel-themed Streamlit UI.
-* **Text Analysis:** Input text to get emotion predictions.
-* **Machine Learning Models:** Leverages trained NLP models to classify text.
+*   **Multi-Model Analysis:** Evaluates text using Logistic Regression, Naive Bayes, and SVM with Platt scaling.
+*   **Deep Linguistic Pipeline:** Conjunction-aware negation marking and high-intensity signal boosting.
+*   **Research Aesthetic:** Minimalist, academic-style UI with a soft pastel palette and smooth staggered transitions.
+*   **Real-time Metrics:** Stratified cross-validation results and confidence calibration shown in live charts.
 
-## Project Structure
+## 📁 Project Structure
 
-* `src/`: Contains core application code (data utilities, model pipelines, preprocessing).
-* `scripts/`: Scripts for building and managing the dataset.
-* `tests/`: Unit tests for ensuring code reliability.
-* `app.py`: The main entry point for the Streamlit application.
-* `.streamlit/`: Configuration for the Streamlit app.
+*   `frontend/`: React application using Vite, Framer Motion, and Recharts.
+*   `api.py`: FastAPI backend that exposes the NLP pipeline endpoints.
+*   `src/`: Core logic for preprocessing, model training, and data handling.
+*   `models/`: Persisted champion model and evaluation metadata.
 
-## Setup Instructions
+## 🚀 Running the Project
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/ShraddhaBora/emolyzer.git
-   cd emolyzer
-   ```
-
-2. **Create a virtual environment (recommended):**
-   ```bash
-   python -m venv venv
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Running the Application
-
-To start the Streamlit app, run the following command in your terminal:
-
+### 1. Start the Backend
 ```bash
-streamlit run app.py
+python -m uvicorn api:app --reload --port 8000
 ```
 
-## Running Tests
+### 2. Start the Frontend
+```bash
+cd frontend
+npm run dev
+```
+
+## 📊 Methodology
+
+The system uses a stratified 5-fold cross-validation approach on a corpus of ~470K samples (Reddit, Twitter, and DAIR-AI datasets). It maps emotional signals to 7 core classes: Sadness, Joy, Love, Anger, Fear, Surprise, and Neutral.
+
+## ✅ Running Tests
 
 To run the unit tests, use pytest:
-
 ```bash
 pytest tests/
 ```
