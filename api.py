@@ -7,15 +7,33 @@ dataset samples, and CSV upload/retrain endpoints.
 
 Start with:
     python -m uvicorn api:app --reload --port 8000
+
+ Model persistence
+ -----------------
+ After the first training run the pipeline + metadata are saved to
+   models/champion_pipeline.joblib
+   models/model_metadata.joblib
+ On every subsequent startup the cached files are loaded instead of
+ retraining, so the server is ready in seconds.
+ Deleting those two files forces a full retrain on next startup.
 """
 
 import sys, os, io, threading, functools
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import pandas as pd
+import joblib
 from fastapi import FastAPI, HTTPException, UploadFile, File, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+# ─── Persistence Paths ────────────────────────────────────────────────────────
+
+_BASE_DIR        = os.path.dirname(os.path.abspath(__file__))
+_MODELS_DIR      = os.path.join(_BASE_DIR, "models")
+_PIPELINE_PATH   = os.path.join(_MODELS_DIR, "champion_pipeline.joblib")
+_METADATA_PATH   = os.path.join(_MODELS_DIR, "model_metadata.joblib")
+os.makedirs(_MODELS_DIR, exist_ok=True)
 
 from src.data_utils import (
     load_and_validate,
@@ -52,11 +70,53 @@ _retrain_lock = threading.Lock()
 
 @app.on_event("startup")
 def startup_event():
-    _train_from_disk()
+    if _load_cached_model():
+        print("Cached model loaded successfully — skipping training.")
+    else:
+        print("No cached model found — training from scratch…")
+        _train_from_disk()
+
+
+def _save_model():
+    """Persist the current champion pipeline and its metadata to disk."""
+    try:
+        joblib.dump(_state["champion_pipeline"], _PIPELINE_PATH)
+        joblib.dump(
+            {
+                "champion_name": _state["champion_name"],
+                "cv_results":    _state["cv_results"],
+                "eval_result":   _state["eval_result"],
+                "df":            _state["df"],
+                "metadata":      _state["metadata"],
+            },
+            _METADATA_PATH,
+        )
+        print(f"Model saved to {_MODELS_DIR}")
+    except Exception as exc:
+        print(f"Warning: could not save model to disk — {exc}")
+
+
+def _load_cached_model() -> bool:
+    """Try to load a previously saved model. Returns True on success."""
+    if not (os.path.exists(_PIPELINE_PATH) and os.path.exists(_METADATA_PATH)):
+        return False
+    try:
+        pipeline = joblib.load(_PIPELINE_PATH)
+        meta     = joblib.load(_METADATA_PATH)
+        _state["champion_pipeline"] = pipeline
+        _state["champion_name"]     = meta["champion_name"]
+        _state["cv_results"]        = meta["cv_results"]
+        _state["eval_result"]       = meta["eval_result"]
+        _state["df"]                = meta["df"]
+        _state["metadata"]          = meta["metadata"]
+        return True
+    except Exception as exc:
+        print(f"Warning: cached model could not be loaded ({exc}) — retraining…")
+        return False
 
 
 def _train_from_disk():
-    """Load the default dataset and train models."""
+    """Load the default dataset, train models, then persist the result."""
     print("Loading dataset and training models…")
     df, metadata = load_and_validate()
     _state["df"] = df
@@ -64,7 +124,7 @@ def _train_from_disk():
     _state["champion_name"] = "not trained"
 
     best_pipeline, best_model_name, cv_results, X_test, y_test = train_and_cross_validate(
-        df, max_features=30000, C=1.0,
+        df, max_features=30000, C=3.0,
     )
     _state["cv_results"] = cv_results
     _state["champion_name"] = best_model_name
@@ -72,6 +132,7 @@ def _train_from_disk():
     eval_result = evaluate_model(best_pipeline, X_test, y_test)
     _state["eval_result"] = eval_result
     print(f"Ready! Champion: {best_model_name}")
+    _save_model()
 
 
 # ─── Request Models ────────────────────────────────────────────────────────────
@@ -310,7 +371,7 @@ async def retrain_on_upload(file: UploadFile = File(...)):
             print(f"Retraining exclusively on custom dataset with {new_rows} total rows…")
             try:
                 best_pipeline, best_model_name, cv_results, X_test, y_test = train_and_cross_validate(
-                    df_new, max_features=30000, C=1.0,
+                    df_new, max_features=30000, C=3.0,
                 )
                 _state["df"] = df_new
                 _state["cv_results"] = cv_results
@@ -319,6 +380,7 @@ async def retrain_on_upload(file: UploadFile = File(...)):
                 eval_result = evaluate_model(best_pipeline, X_test, y_test)
                 _state["eval_result"] = eval_result
                 print(f"Retrain complete! Champion: {best_model_name}")
+                _save_model()
             except Exception as e:
                 print(f"Retrain failed: {e}")
             finally:
@@ -333,3 +395,11 @@ async def retrain_on_upload(file: UploadFile = File(...)):
         "total_rows": new_rows,
         "message": "Retraining custom dataset has started. Poll /health for status.",
     }
+
+# Trigger reload
+
+# Trigger reload 2
+
+# Trigger reload 3
+
+# Force reload for dict color changes

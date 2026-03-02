@@ -20,13 +20,13 @@ EMOTION_MAP = {
 }
 
 EMOTION_COLORS = {
-    "Sadness":  "#5C85D6", 
-    "Joy":      "#F5C542",
-    "Love":     "#E75480", 
-    "Anger":    "#E05252",
-    "Fear":     "#9B59B6", 
-    "Surprise": "#48C9B0",
-    "Neutral":  "#A9A9A9"
+    "Sadness":  "#A7C5EB", 
+    "Joy":      "#F9E6A1",
+    "Love":     "#FBB6D9", 
+    "Anger":    "#F9AFA1",
+    "Fear":     "#CFB9FA", 
+    "Surprise": "#A3EBB1",
+    "Neutral":  "#C5CBD3"
 }
 
 
@@ -134,3 +134,5 @@ def sample_rows(df: pd.DataFrame, n: int = 8, random_state: int = 42) -> pd.Data
         .sample(n=min(n, len(df)), random_state=random_state)
         .reset_index(drop=True)
     )
+
+# Force reload for dict color changes

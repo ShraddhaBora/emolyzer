@@ -6,3 +6,7 @@ __pycache__/
 .DS_Store
 *.log
 .pytest_cache/
+
+# Persisted model files (large, reproducible by retraining)
+models/
+*.joblib

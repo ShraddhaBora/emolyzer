@@ -54,6 +54,7 @@ def build_pipeline(max_features: int = 30_000, C: float = 1.0) -> Pipeline:
             strip_accents="unicode",
             analyzer="word",
             token_pattern=r"\w{2,}",     # \w includes _ so NOT_xxx is one token
+            stop_words="english",        # Drop neutral grammar/filler words
             min_df=2,
         )),
         # Step 3: Multinomial Logistic Regression
@@ -105,7 +106,8 @@ def train_and_cross_validate(df: pd.DataFrame, max_features: int = 30_000, C: fl
         ("negation", NegationPreprocessor()),
         ("tfidf", TfidfVectorizer(
             max_features=max_features, ngram_range=(1, 2), sublinear_tf=True,
-            strip_accents="unicode", analyzer="word", token_pattern=r"\w{2,}", min_df=2
+            strip_accents="unicode", analyzer="word", token_pattern=r"\w{2,}", 
+            stop_words="english", min_df=2
         ))
     ])
     X_train_vec = vectorizer.fit_transform(X_train)
@@ -144,7 +146,8 @@ def train_and_cross_validate(df: pd.DataFrame, max_features: int = 30_000, C: fl
         ("negation", NegationPreprocessor()),
         ("tfidf", TfidfVectorizer(
             max_features=max_features, ngram_range=(1, 2), sublinear_tf=True,
-            strip_accents="unicode", analyzer="word", token_pattern=r"\w{2,}", min_df=2
+            strip_accents="unicode", analyzer="word", token_pattern=r"\w{2,}",
+            stop_words="english", min_df=2
         )),
         ("clf", best_clf)
     ])
@@ -266,38 +269,161 @@ def get_top_misclassifications(confusion_matrix: np.ndarray, class_names: list, 
 
 # ─── Inference ───────────────────────────────────────────────────────────────
 
+_spell = None
+_synonym_cache = {}
+
+def _get_spellchecker():
+    global _spell
+    if _spell is None:
+        try:
+            from spellchecker import SpellChecker
+            _spell = SpellChecker()
+        except ImportError:
+            pass
+    return _spell
+
+def _get_synonyms(word: str) -> set:
+    if word in _synonym_cache:
+        return _synonym_cache[word]
+    
+    synonyms = set()
+    try:
+        from nltk.corpus import wordnet
+        for syn in wordnet.synsets(word):
+            for l in syn.lemmas():
+                name = l.name().lower().replace("_", "")
+                synonyms.add(name)
+    except Exception:
+        pass
+        
+    _synonym_cache[word] = synonyms
+    return synonyms
+
 def _normalize_oov_tokens(text: str, vocab: dict) -> str:
     """
-    For each whitespace-separated token that is NOT in the TF-IDF vocabulary,
-    aggressively squash all runs of 3+ identical characters down to 1 and test
-    if the resulting base-form is in the vocabulary.
-
-    Examples (given 'love' and 'hate' exist in vocab):
-      'loveee'   -> 'love'
-      'haateeee' -> 'hate'
-      'feel'     ->  unchanged (already in vocab)
-      'too'      ->  unchanged (already in vocab)
-      'asdfghj'  ->  returned as-is (squashed form still not in vocab)
-
-    This is only applied per-token, so it cannot accidentally conflate
-    completely different words (e.g. 'like' never becomes 'love').
+    Attempts to normalize an unknown text sequence by:
+    1. Looking up direct match in vocab.
+    2. Squashing elongated characters (e.g. 'loovveee' -> 'love')
+    3. Checking for spelling corrections against common words.
+    4. Looking up synonyms via WordNet that exist in the training vocabulary.
     """
     import re as _re
     tokens = text.split()
     result = []
+    
+    spell = _get_spellchecker()
+    
     for token in tokens:
-        # Strip punctuation to get the bare word for vocab lookup
+        # Strip punctuation to get the bare word
         bare = _re.sub(r"[^\w]", "", token).lower()
+        if not bare:
+            result.append(token)
+            continue
+            
+        # 1. Direct match
         if bare in vocab:
-            result.append(token)         # In-vocab: keep original
-        else:
-            # Squash runs of 2+ identical chars down to 1 (covers 'aa', 'eee', etc.)
-            squashed = _re.sub(r"(.)\1+", r"\1", bare)
-            if squashed in vocab:
-                result.append(squashed)  # Normalised form found
-            else:
-                result.append(token)     # Truly OOV: keep original
+            result.append(token)
+            continue
+            
+        candidates = []
+        
+        # 2. Squash runs of 2+ identical chars (e.g. loovveee -> love)
+        squashed = _re.sub(r"(.)\1+", r"\1", bare)
+        if squashed:
+            candidates.append(squashed)
+        
+        # 3. Spelling correction
+        if spell:
+            corr_bare = spell.correction(bare)
+            if corr_bare:
+                candidates.append(corr_bare)
+            
+            corr_squash = spell.correction(squashed)
+            if corr_squash:
+                candidates.append(corr_squash)
+            
+        found_in_vocab = False
+        for cand in candidates:
+            if cand in vocab:
+                result.append(cand)
+                found_in_vocab = True
+                break
+                
+        if found_in_vocab:
+            continue
+            
+        # 4. Synonym Search
+        all_to_check = set([bare] + candidates)
+        found_synonym = False
+        
+        for word_to_check in all_to_check:
+            syns = _get_synonyms(word_to_check)
+            for syn in syns:
+                if syn in vocab:
+                    result.append(syn)
+                    found_synonym = True
+                    break
+            if found_synonym:
+                break
+                
+        if found_synonym:
+            continue
+            
+        # 5. Genuinely unknown – keep original
+        result.append(token)
+        
     return " ".join(result)
+
+
+def _augment_with_synonyms(text: str, vocab: dict) -> str:
+    """
+    For each token in `text` that exists in the TF-IDF vocabulary, look up its
+    WordNet synonyms and inject those that also exist in the vocabulary.
+    For NOT_<word> tokens, look up antonyms of <word> and inject them.
+    This gives the classifier richer signal at inference time.
+    """
+    import re as _re
+    try:
+        from nltk.corpus import wordnet
+    except Exception:
+        return text   # NLTK not available — skip silently
+
+    tokens = text.split()
+    extras = []
+
+    for token in tokens:
+        bare = _re.sub(r"[^\w]", "", token).lower()
+        if not bare:
+            continue
+
+        # Handle NOT_word → look up antonyms of `word`
+        if bare.startswith("not_"):
+            base_word = bare[4:]
+            try:
+                for syn in wordnet.synsets(base_word):
+                    for lemma in syn.lemmas():
+                        for ant in lemma.antonyms():
+                            ant_word = ant.name().lower().replace("_", "")
+                            if ant_word in vocab and ant_word not in extras:
+                                extras.append(ant_word)
+            except Exception:
+                pass
+        else:
+            # Regular word → look up synonyms
+            if bare not in vocab:
+                continue   # don't bother for OOV tokens (handled elsewhere)
+            try:
+                for syn in wordnet.synsets(bare):
+                    for lemma in syn.lemmas():
+                        syn_word = lemma.name().lower().replace("_", "")
+                        if syn_word in vocab and syn_word != bare and syn_word not in extras:
+                            extras.append(syn_word)
+            except Exception:
+                pass
+
+    if extras:
+        return text + " " + " ".join(extras)
+    return text
 
 
 def predict_emotion(pipeline: Pipeline, text: str) -> dict:
@@ -312,41 +438,25 @@ def predict_emotion(pipeline: Pipeline, text: str) -> dict:
           - is_oov            (bool) – True if input contains no known vocabulary
     """
     text = text.strip()
-    vectorizer = pipeline.named_steps["tfidf"]
-    vocab      = vectorizer.vocabulary_
-
-    # First attempt: run the text through the full pipeline as-is
-    # (the NegationPreprocessor is applied inside predict_proba, so we must
-    # apply it manually before the OOV check which goes directly to tfidf)
+    vectorizer    = pipeline.named_steps["tfidf"]
+    vocab         = vectorizer.vocabulary_
     negation_step = pipeline.named_steps["negation"]
-    preprocessed  = negation_step.transform([text])[0]
+    clf           = pipeline.named_steps["clf"]
 
-    vector  = vectorizer.transform([preprocessed])
-    is_oov  = vector.nnz == 0   # no non-zero entries → all OOV
+    # 1. Apply negation logic + intensity boost injection
+    preprocessed = negation_step.transform([text])[0]
+
+    # 2. Normalize elongated OOV tokens (e.g. "loveeeee" → "love")
+    normalised = _normalize_oov_tokens(preprocessed, vocab)
+
+    # 3. Augment with WordNet synonyms/antonyms for richer signal
+    augmented = _augment_with_synonyms(normalised, vocab)
+
+    # 4. Convert into TF-IDF vector space
+    vector = vectorizer.transform([augmented])
+    is_oov = vector.nnz == 0   # no non-zero entries → all OOV
 
     if is_oov:
-        # Try to rescue the text by normalising elongated tokens
-        normalised = _normalize_oov_tokens(preprocessed, vocab)
-        vector_norm = vectorizer.transform([normalised])
-        if vector_norm.nnz > 0:
-            # At least one rescued token is in-vocab – use the normalised text
-            proba_array  = pipeline.named_steps["clf"].predict_proba(vector_norm)[0]
-            class_indices = pipeline.classes_
-            probabilities = {
-                EMOTION_MAP[int(c)]: float(p)
-                for c, p in zip(class_indices, proba_array)
-            }
-            predicted_idx    = int(np.argmax(proba_array))
-            predicted_class  = int(class_indices[predicted_idx])
-            predicted_emotion = EMOTION_MAP.get(predicted_class, "Unknown")
-            confidence        = float(proba_array[predicted_idx])
-            return {
-                "predicted_emotion": predicted_emotion,
-                "confidence":        confidence,
-                "probabilities":     probabilities,
-                "is_oov":            False,
-            }
-        # Genuinely unknown – nothing we can do
         return {
             "predicted_emotion": "Unknown (Out of Vocabulary)",
             "confidence": 0.0,
@@ -354,7 +464,7 @@ def predict_emotion(pipeline: Pipeline, text: str) -> dict:
             "is_oov": True,
         }
 
-    proba_array   = pipeline.predict_proba([text])[0]
+    proba_array   = clf.predict_proba(vector)[0]
     class_indices = pipeline.classes_
 
     probabilities = {
@@ -362,8 +472,8 @@ def predict_emotion(pipeline: Pipeline, text: str) -> dict:
         for c, p in zip(class_indices, proba_array)
     }
 
-    predicted_idx    = int(np.argmax(proba_array))
-    predicted_class  = int(class_indices[predicted_idx])
+    predicted_idx     = int(np.argmax(proba_array))
+    predicted_class   = int(class_indices[predicted_idx])
     predicted_emotion = EMOTION_MAP.get(predicted_class, "Unknown")
     confidence        = float(proba_array[predicted_idx])
 
@@ -371,5 +481,6 @@ def predict_emotion(pipeline: Pipeline, text: str) -> dict:
         "predicted_emotion": predicted_emotion,
         "confidence":        confidence,
         "probabilities":     probabilities,
-        "is_oov":            is_oov,
+        "is_oov":            False,
     }
+
