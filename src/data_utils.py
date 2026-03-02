@@ -13,7 +13,7 @@ import numpy as np
 
 # Build path relative to this file's directory
 _BASE = os.path.dirname(os.path.abspath(__file__))
-DATASET_PATH = os.path.join(os.path.dirname(_BASE), "merged_text.csv")
+DATASET_PATH = os.path.join(os.path.dirname(_BASE), "merged_text.csv.gz")
 
 REQUIRED_COLUMNS = {"text", "label"}
 
