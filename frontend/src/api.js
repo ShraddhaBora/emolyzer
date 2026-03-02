@@ -1,5 +1,5 @@
 /* hooks/useApi.js — Thin API client */
-const BASE = import.meta.env.VITE_API_URL || '/api'
+const BASE = ''
 
 export async function apiPredict(text) {
     const res = await fetch(`${BASE}/predict`, {

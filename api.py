@@ -24,8 +24,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pandas as pd
 import joblib
 import nltk
-from fastapi import FastAPI, HTTPException, UploadFile, File, Query
+from fastapi import FastAPI, HTTPException, UploadFile, File, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 # ─── Persistence Paths ────────────────────────────────────────────────────────
@@ -404,10 +406,26 @@ async def retrain_on_upload(file: UploadFile = File(...)):
         "message": "Retraining custom dataset has started. Poll /health for status.",
     }
 
-# Trigger reload
+# ─── Static Files & SPA Routing ────────────────────────────────────────────────
 
-# Trigger reload 2
+# Mount the static files built from React (frontend/dist)
+# Important: Mount this AFTER defining all /api routes
+_FRONTEND_DIST = os.path.join(_BASE_DIR, "frontend", "dist")
+if os.path.exists(_FRONTEND_DIST):
+    app.mount("/assets", StaticFiles(directory=os.path.join(_FRONTEND_DIST, "assets")), name="assets")
 
-# Trigger reload 3
+    @app.get("/{full_path:path}")
+    async def serve_spa(request: Request, full_path: str):
+        # If it's an API route that 404'd, don't serve index.html
+        if full_path.startswith("api/"):
+             raise HTTPException(status_code=404, detail="API Route Not Found")
+        
+        # Serve index.html for all other routes to support React Router
+        index_file = os.path.join(_FRONTEND_DIST, "index.html")
+        return FileResponse(index_file)
+else:
+    @app.get("/")
+    def root_no_frontend():
+        return {"status": "online", "message": "Backend is running, but frontend/dist was not found. Build the frontend first."}
 
-# Force reload for dict color changes
+# Trigger reload 4
