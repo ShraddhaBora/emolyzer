@@ -1,0 +1,186 @@
+﻿src/App.tsx(93,29): error TS2322: Type '{ initial: { opacity: number; }; animate: { opacity: number; transition: { duration: number; ease: string; }; }; exit: { opacity: number; transition: { duration: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'animate' is incompatible with index signature.
+    Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/App.tsx(103,29): error TS2322: Type '{ initial: { opacity: number; }; animate: { opacity: number; transition: { duration: number; ease: string; }; }; exit: { opacity: number; transition: { duration: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'animate' is incompatible with index signature.
+    Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/App.tsx(113,29): error TS2322: Type '{ initial: { opacity: number; }; animate: { opacity: number; transition: { duration: number; ease: string; }; }; exit: { opacity: number; transition: { duration: number; ease: string; }; }; }' is not assignable to type 'Variants'.
+  Property 'animate' is incompatible with index signature.
+    Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; transition: { duration: number; ease: string; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ duration: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ duration: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ duration: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'ease' are incompatible.
+                    Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/components/ProbabilityBars.tsx(42,21): error TS2322: Type '{ hidden: { opacity: number; x: number; filter: string; }; visible: { opacity: number; x: number; filter: string; transition: { type: string; stiffness: number; damping: number; }; }; }' is not assignable to type 'Variants'.
+  Property 'visible' is incompatible with index signature.
+    Type '{ opacity: number; x: number; filter: string; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; x: number; filter: string; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; x: number; filter: string; transition: { type: string; stiffness: number; damping: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; stiffness: number; damping: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+src/pages/AnalysePage.tsx(112,22): error TS18046: 'err' is of type 'unknown'.
+src/pages/AnalysePage.tsx(137,18): error TS2322: Type '{ children: (string | Element)[]; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"h1">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AnalysePage.tsx(142,18): error TS2322: Type '{ children: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"p">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AnalysePage.tsx(151,22): error TS2322: Type '{ children: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; key: string; className: string; onClick: () => void; }' is not assignable to type 'Omit<HTMLMotionProps<"button">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AnalysePage.tsx(166,18): error TS2322: Type '{ children: (false | "" | Element | null)[]; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; onSubmit: (e: FormEvent<Element>) => Promise<...>; className: string; }' is not assignable to type 'Omit<HTMLMotionProps<"form">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AnalysePage.tsx(231,18): error TS2322: Type '{ children: Element; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/AnalysePage.tsx(303,42): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ Sadness: string; Joy: string; Love: string; Anger: string; Fear: string; Surprise: string; Neutral: string; 'Unknown (Out of Vocabulary)': string; }'.
+src/pages/DistributionPage.tsx(55,22): error TS2322: Type '{ children: Element; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; key: string; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/DistributionPage.tsx(69,30): error TS2322: Type '{ children: (string | Element)[]; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"h1">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/DistributionPage.tsx(72,30): error TS2322: Type '{ children: any[]; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"p">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/DistributionPage.tsx(86,34): error TS2322: Type '{ children: Element[]; className: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; key: string; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/DistributionPage.tsx(94,26): error TS2322: Type '{ children: Element[]; className: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/DistributionPage.tsx(104,64): error TS18048: 'v' is possibly 'undefined'.
+src/pages/DistributionPage.tsx(106,115): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Props, context?: any): string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<...> | Promise<...> | Component<...> | null | undefined', gave the following error.
+    Type 'number[]' is not assignable to type 'string | number | undefined'.
+  Overload 2 of 2, '(props: Props): string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<...> | Component<...> | null | undefined', gave the following error.
+    Type 'number[]' is not assignable to type 'string | number | undefined'.
+src/pages/DistributionPage.tsx(107,56): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/pages/DistributionPage.tsx(115,26): error TS2322: Type '{ children: Element[]; className: string; style: { marginTop: string; }; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/DistributionPage.tsx(122,48): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/pages/DistributionPage.tsx(122,53): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/pages/MetricsPage.tsx(61,22): error TS2322: Type '{ children: Element; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; key: string; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/MetricsPage.tsx(74,30): error TS2322: Type '{ children: (string | Element)[]; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"h1">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/MetricsPage.tsx(77,30): error TS2322: Type '{ children: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"p">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/MetricsPage.tsx(92,34): error TS2322: Type '{ children: Element[]; className: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; key: string; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/MetricsPage.tsx(101,30): error TS2322: Type '{ children: Element[]; className: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/MetricsPage.tsx(108,50): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/pages/MetricsPage.tsx(108,53): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/pages/MetricsPage.tsx(130,30): error TS2322: Type '{ children: Element[]; className: string; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.
+src/pages/MetricsPage.tsx(138,212): error TS18048: 'v' is possibly 'undefined'.
+src/pages/MetricsPage.tsx(138,214): error TS2339: Property 'toFixed' does not exist on type 'ValueType'.
+  Property 'toFixed' does not exist on type 'string'.
+src/pages/MetricsPage.tsx(146,26): error TS2322: Type '{ children: Element[]; className: string; style: { marginTop: string; }; initial: { opacity: number; }; animate: { opacity: number; }; transition: { duration: number; delay: number; ease: string; }; }' is not assignable to type 'Omit<HTMLMotionProps<"div">, "ref">'.
+  Types of property 'transition' are incompatible.
+    Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'Transition<any> | undefined'.
+      Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+        Type '{ duration: number; delay: number; ease: string; }' is not assignable to type 'ValueAnimationTransition<any>'.
+          Types of property 'ease' are incompatible.
+            Type 'string' is not assignable to type 'Easing | Easing[] | undefined'.

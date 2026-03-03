@@ -10,9 +10,7 @@ import sys
 import os
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.graph_objects as go
-import plotly.express as px
 
 # Ensure src is importable regardless of working directory
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -44,7 +42,8 @@ st.set_page_config(
 
 # ─── Global CSS ───────────────────────────────────────────────────────────────
 
-st.markdown("""
+st.markdown(
+    """
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -213,9 +212,12 @@ st.markdown("""
     margin-top: 0.2rem;
   }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ─── Cached Functions ──────────────────────────────────────────────────────────
+
 
 @st.cache_data(show_spinner=False)
 def cached_load_data():
@@ -248,20 +250,27 @@ def apply_dark_theme(fig):
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 
+
 def render_sidebar():
     with st.sidebar:
-        st.markdown("""
+        st.markdown(
+            """
         <div class="sidebar-brand">
           <div class="sidebar-logo">🧠</div>
           <div class="sidebar-name">Emolyzer</div>
           <div class="sidebar-tagline">Emotion Classification System</div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         st.markdown("#### ⚙️ Model Configuration")
         max_features = st.slider(
             "TF-IDF Max Features",
-            min_value=5_000, max_value=60_000, value=30_000, step=5_000,
+            min_value=5_000,
+            max_value=60_000,
+            value=30_000,
+            step=5_000,
             help="Vocabulary size for the TF-IDF vectorizer. Higher → richer features, slower training.",
         )
         C = st.select_slider(
@@ -273,7 +282,8 @@ def render_sidebar():
 
         st.markdown("---")
         st.markdown("#### 📋 Research Methodology")
-        st.markdown("""
+        st.markdown(
+            """
         <p style='color:#718096; font-size:0.8rem; line-height:1.6'>
         Emolyzer functions as a comparative study in supervised text classification.
         Instead of relying on a single algorithm, the pipeline rigorously evaluates
@@ -283,80 +293,106 @@ def render_sidebar():
         The model demonstrating the highest Mean F1-Score is automatically championed 
         for live inference, ensuring maximum generalisation.
         </p>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         st.markdown("#### 🏷️ Emotion Classes")
         for label, emotion in EMOTION_MAP.items():
             color = EMOTION_COLORS[emotion]
             st.markdown(
                 f'<span class="info-chip" style="border-color:{color}40; color:{color};">'
-                f'{label} — {emotion}</span>',
+                f"{label} — {emotion}</span>",
                 unsafe_allow_html=True,
             )
 
         st.markdown("---")
-        st.markdown("""
+        st.markdown(
+            """
         <p style='color:#4a5568; font-size:0.72rem; text-align:center; margin-top:1rem'>
         Framework: Scikit-learn · Streamlit<br>
         Evaluation: 5-Fold Stratified CV
         </p>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     return max_features, C
 
 
 # ─── Tab 1: Data & EDA ────────────────────────────────────────────────────────
 
+
 def render_eda_tab(df, meta):
     # Top metrics
     dist_df = class_distribution(df)
     majority_class = dist_df.iloc[0]["Emotion"]
-    majority_pct   = dist_df.iloc[0]["Percentage"]
+    majority_pct = dist_df.iloc[0]["Percentage"]
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
-          <div class="metric-value">{meta['total_rows']:,}</div>
+          <div class="metric-value">{meta["total_rows"]:,}</div>
           <div class="metric-label">Total Samples</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with col2:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
-          <div class="metric-value">{meta['num_classes']}</div>
+          <div class="metric-value">{meta["num_classes"]}</div>
           <div class="metric-label">Emotion Classes</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with col3:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
-          <div class="metric-value">{meta['rows_dropped']}</div>
+          <div class="metric-value">{meta["rows_dropped"]}</div>
           <div class="metric-label">Rows Dropped (NaN)</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with col4:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
           <div class="metric-value">{majority_class}</div>
           <div class="metric-label">Majority Class ({majority_pct}%)</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     col_left, col_right = st.columns([1.2, 1])
 
     with col_left:
-        st.markdown('<div class="section-header">Class Distribution</div>', unsafe_allow_html=True)
-        fig = go.Figure(go.Bar(
-            x=dist_df["Emotion"],
-            y=dist_df["Count"],
-            marker_color=dist_df["Color"],
-            marker_line_width=0,
-            text=dist_df["Percentage"].apply(lambda x: f"{x}%"),
-            textposition="outside",
-            textfont=dict(size=11, color="#a0aec0"),
-        ))
+        st.markdown(
+            '<div class="section-header">Class Distribution</div>',
+            unsafe_allow_html=True,
+        )
+        fig = go.Figure(
+            go.Bar(
+                x=dist_df["Emotion"],
+                y=dist_df["Count"],
+                marker_color=dist_df["Color"],
+                marker_line_width=0,
+                text=dist_df["Percentage"].apply(lambda x: f"{x}%"),
+                textposition="outside",
+                textfont=dict(size=11, color="#a0aec0"),
+            )
+        )
         fig.update_layout(
-            title=dict(text="Samples per Emotion Class", font=dict(size=13, color="#e2e8f0")),
-            xaxis_title=None, yaxis_title="Count",
+            title=dict(
+                text="Samples per Emotion Class", font=dict(size=13, color="#e2e8f0")
+            ),
+            xaxis_title=None,
+            yaxis_title="Count",
             showlegend=False,
             **PLOTLY_LAYOUT,
         )
@@ -365,16 +401,23 @@ def render_eda_tab(df, meta):
         st.plotly_chart(fig, use_container_width=True)
 
     with col_right:
-        st.markdown('<div class="section-header">Proportion Breakdown</div>', unsafe_allow_html=True)
-        fig_pie = go.Figure(go.Pie(
-            labels=dist_df["Emotion"],
-            values=dist_df["Count"],
-            marker=dict(colors=dist_df["Color"], line=dict(color="#0E1117", width=2)),
-            hole=0.52,
-            textinfo="label+percent",
-            textfont=dict(size=11),
-            hovertemplate="<b>%{label}</b><br>%{value} samples<br>%{percent}<extra></extra>",
-        ))
+        st.markdown(
+            '<div class="section-header">Proportion Breakdown</div>',
+            unsafe_allow_html=True,
+        )
+        fig_pie = go.Figure(
+            go.Pie(
+                labels=dist_df["Emotion"],
+                values=dist_df["Count"],
+                marker=dict(
+                    colors=dist_df["Color"], line=dict(color="#0E1117", width=2)
+                ),
+                hole=0.52,
+                textinfo="label+percent",
+                textfont=dict(size=11),
+                hovertemplate="<b>%{label}</b><br>%{value} samples<br>%{percent}<extra></extra>",
+            )
+        )
         fig_pie.update_layout(
             showlegend=False,
             **PLOTLY_LAYOUT,
@@ -382,20 +425,28 @@ def render_eda_tab(df, meta):
         st.plotly_chart(fig_pie, use_container_width=True)
 
     # Text Length Analysis
-    st.markdown('<div class="section-header">Text Length Statistics (Word Count)</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Text Length Statistics (Word Count)</div>',
+        unsafe_allow_html=True,
+    )
     len_df = text_length_stats(df)
     fig_box = go.Figure()
     for _, row in dist_df.iterrows():
         subset = df[df["emotion"] == row["Emotion"]]["text"].str.split().str.len()
-        fig_box.add_trace(go.Box(
-            y=subset,
-            name=row["Emotion"],
-            marker_color=row["Color"],
-            line=dict(color=row["Color"]),
-            boxmean=True,
-        ))
+        fig_box.add_trace(
+            go.Box(
+                y=subset,
+                name=row["Emotion"],
+                marker_color=row["Color"],
+                line=dict(color=row["Color"]),
+                boxmean=True,
+            )
+        )
     fig_box.update_layout(
-        title=dict(text="Word Count Distribution per Emotion", font=dict(size=13, color="#e2e8f0")),
+        title=dict(
+            text="Word Count Distribution per Emotion",
+            font=dict(size=13, color="#e2e8f0"),
+        ),
         showlegend=False,
         **PLOTLY_LAYOUT,
     )
@@ -403,7 +454,9 @@ def render_eda_tab(df, meta):
     st.plotly_chart(fig_box, use_container_width=True)
 
     # Data sample
-    st.markdown('<div class="section-header">Dataset Sample</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Dataset Sample</div>', unsafe_allow_html=True
+    )
     sample = sample_rows(df, n=8)
     # Style the emotion column
     st.dataframe(
@@ -418,17 +471,19 @@ def render_eda_tab(df, meta):
 
 # ─── Tab 2: Model Performance ─────────────────────────────────────────────────
 
+
 def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test):
     eval_results = evaluate_model(pipeline, X_test, y_test)
 
-    accuracy  = eval_results["accuracy"]
-    macro_f1  = eval_results["macro_f1"]
-    report    = eval_results["report_dict"]
-    cm        = eval_results["confusion_matrix"]
+    accuracy = eval_results["accuracy"]
+    macro_f1 = eval_results["macro_f1"]
+    report = eval_results["report_dict"]
+    cm = eval_results["confusion_matrix"]
     cls_names = eval_results["class_names"]
 
     # Champion Model Banner
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style='background: rgba(124, 111, 247, 0.1); border-left: 4px solid #7C6FF7; padding: 1rem 1.5rem; border-radius: 4px; margin-bottom: 2rem;'>
         <h3 style='margin:0; color:#e2e8f0; font-size:1.2rem;'>🏆 Champion Model: {best_model_name}</h3>
         <p style='color:#a0aec0; font-size:0.85rem; margin:0.4rem 0 0 0;'>
@@ -436,51 +491,73 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
             The metrics below represent its performance on a strictly isolated 20% holdout test set ({len(X_test):,} samples).
         </p>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # Cross Validation Comparison Table
-    st.markdown('<div class="section-header">Cross-Validation Study (Train Set)</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Cross-Validation Study (Train Set)</div>',
+        unsafe_allow_html=True,
+    )
     cv_df_rows = []
     for model, res in cv_results.items():
         is_best = "★ " if model == best_model_name else ""
-        cv_df_rows.append({
-            "Algorithm": f"{is_best}{model}",
-            "CV Mean F1": f"{res['mean_f1']:.4f} (± {res['std_f1']:.3f})",
-            "CV Mean Accuracy": f"{res['mean_accuracy']:.4f} (± {res['std_accuracy']:.3f})",
-        })
+        cv_df_rows.append(
+            {
+                "Algorithm": f"{is_best}{model}",
+                "CV Mean F1": f"{res['mean_f1']:.4f} (± {res['std_f1']:.3f})",
+                "CV Mean Accuracy": f"{res['mean_accuracy']:.4f} (± {res['std_accuracy']:.3f})",
+            }
+        )
     cv_df = pd.DataFrame(cv_df_rows)
     st.dataframe(cv_df, use_container_width=True, hide_index=True)
 
     st.markdown("---")
-    st.markdown('<div class="section-header">Holdout Set Performance (Test Set)</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Holdout Set Performance (Test Set)</div>',
+        unsafe_allow_html=True,
+    )
 
     # Top metrics
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
             <div class="metric-value">{accuracy:.1%}</div>
             <div class="metric-label">Holdout Accuracy</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with col2:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
             <div class="metric-value">{macro_f1:.3f}</div>
             <div class="metric-label">Macro F1-Score</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with col3:
         wa_f1 = report.get("weighted avg", {}).get("f1-score", 0.0)
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
             <div class="metric-value">{wa_f1:.3f}</div>
             <div class="metric-label">Weighted F1-Score</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
     with col4:
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div class="metric-card">
             <div class="metric-value">{len(X_test):,}</div>
             <div class="metric-label">Test Samples</div>
-        </div>""", unsafe_allow_html=True)
+        </div>""",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -488,31 +565,39 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
 
     # Confusion Matrix
     with col_left:
-        st.markdown('<div class="section-header">Confusion Matrix</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-header">Confusion Matrix</div>', unsafe_allow_html=True
+        )
         # Normalize by true label (rows) for readability
         cm_norm = cm.astype(float) / (cm.sum(axis=1, keepdims=True) + 1e-9)
-        fig_cm = go.Figure(go.Heatmap(
-            z=cm_norm,
-            x=cls_names, y=cls_names,
-            colorscale=[
-                [0.0, "#1a1f35"],
-                [0.5, "#4a3fa5"],
-                [1.0, "#7C6FF7"],
-            ],
-            text=cm,
-            texttemplate="%{text}",
-            textfont=dict(size=12, color="white"),
-            hovertemplate="Actual: <b>%{y}</b><br>Predicted: <b>%{x}</b><br>Count: %{text}<extra></extra>",
-            zmin=0, zmax=1,
-            showscale=True,
-            colorbar=dict(
-                thickness=10,
-                tickfont=dict(color="#718096", size=10),
-                outlinewidth=0,
-            ),
-        ))
+        fig_cm = go.Figure(
+            go.Heatmap(
+                z=cm_norm,
+                x=cls_names,
+                y=cls_names,
+                colorscale=[
+                    [0.0, "#1a1f35"],
+                    [0.5, "#4a3fa5"],
+                    [1.0, "#7C6FF7"],
+                ],
+                text=cm,
+                texttemplate="%{text}",
+                textfont=dict(size=12, color="white"),
+                hovertemplate="Actual: <b>%{y}</b><br>Predicted: <b>%{x}</b><br>Count: %{text}<extra></extra>",
+                zmin=0,
+                zmax=1,
+                showscale=True,
+                colorbar=dict(
+                    thickness=10,
+                    tickfont=dict(color="#718096", size=10),
+                    outlinewidth=0,
+                ),
+            )
+        )
         fig_cm.update_layout(
-            title=dict(text="Normalised by True Class", font=dict(size=12, color="#718096")),
+            title=dict(
+                text="Normalised by True Class", font=dict(size=12, color="#718096")
+            ),
             xaxis=dict(title="Predicted", tickfont=dict(size=11)),
             yaxis=dict(title="Actual", tickfont=dict(size=11), autorange="reversed"),
             height=800,
@@ -522,23 +607,33 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
 
     # Per-class F1 bar chart
     with col_right:
-        st.markdown('<div class="section-header">Per-Class F1 Scores</div>', unsafe_allow_html=True)
-        class_f1s = [(cls, report[cls]["f1-score"]) for cls in cls_names if cls in report]
+        st.markdown(
+            '<div class="section-header">Per-Class F1 Scores</div>',
+            unsafe_allow_html=True,
+        )
+        class_f1s = [
+            (cls, report[cls]["f1-score"]) for cls in cls_names if cls in report
+        ]
         class_f1s.sort(key=lambda x: x[1], reverse=True)
         cls_sorted, f1_sorted = zip(*class_f1s)
         colors = [EMOTION_COLORS.get(c, "#7C6FF7") for c in cls_sorted]
-        fig_f1 = go.Figure(go.Bar(
-            x=list(f1_sorted),
-            y=list(cls_sorted),
-            orientation="h",
-            marker_color=colors,
-            marker_line_width=0,
-            text=[f"{v:.3f}" for v in f1_sorted],
-            textposition="outside",
-            textfont=dict(size=11, color="#a0aec0"),
-        ))
+        fig_f1 = go.Figure(
+            go.Bar(
+                x=list(f1_sorted),
+                y=list(cls_sorted),
+                orientation="h",
+                marker_color=colors,
+                marker_line_width=0,
+                text=[f"{v:.3f}" for v in f1_sorted],
+                textposition="outside",
+                textfont=dict(size=11, color="#a0aec0"),
+            )
+        )
         fig_f1.update_layout(
-            title=dict(text="F1-Score per Emotion Class (Test Set)", font=dict(size=13, color="#e2e8f0")),
+            title=dict(
+                text="F1-Score per Emotion Class (Test Set)",
+                font=dict(size=13, color="#e2e8f0"),
+            ),
             xaxis=dict(range=[0, 1.1], title="F1-Score"),
             yaxis=dict(title=None, tickfont=dict(size=11)),
             showlegend=False,
@@ -548,7 +643,10 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
         st.plotly_chart(fig_f1, use_container_width=True)
 
     # Misclassification Insights
-    st.markdown('<div class="section-header">Model Limitations: Misclassification Analysis</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Model Limitations: Misclassification Analysis</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "<p style='color:#718096;font-size:0.85rem'>Analysis of the top confused class pairs reveals "
         "ambiguities inherent in human-labelled text datasets. High confusion between semantically similar "
@@ -561,7 +659,10 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
     st.dataframe(misc_df, use_container_width=True, hide_index=True)
 
     # Feature importance
-    st.markdown('<div class="section-header">Top TF-IDF Features per Emotion Class</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-header">Top TF-IDF Features per Emotion Class</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         "<p style='color:#718096;font-size:0.82rem'>Features with the highest learned coefficients "
         "reveal the linguistic patterns dominating each class.</p>",
@@ -569,25 +670,31 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
     )
 
     importance = get_feature_importance(pipeline, top_n=12)
-    
+
     selected_emotion = None
     if "Note" in importance:
-        st.info("Feature interpretation via coefficients is not supported for the championed algorithm.")
+        st.info(
+            "Feature interpretation via coefficients is not supported for the championed algorithm."
+        )
     else:
-        selected_emotion = st.selectbox("Select an emotion to view its top features:", list(importance.keys()))
-    
+        selected_emotion = st.selectbox(
+            "Select an emotion to view its top features:", list(importance.keys())
+        )
+
     if selected_emotion:
         features = importance[selected_emotion]
         words, weights = zip(*features)
         color = EMOTION_COLORS.get(selected_emotion, "#7C6FF7")
-        fig_feat = go.Figure(go.Bar(
-            x=list(weights),
-            y=list(words),
-            orientation="h",
-            marker_color=color,
-            marker_line_width=0,
-            opacity=0.85,
-        ))
+        fig_feat = go.Figure(
+            go.Bar(
+                x=list(weights),
+                y=list(words),
+                orientation="h",
+                marker_color=color,
+                marker_line_width=0,
+                opacity=0.85,
+            )
+        )
         fig_feat.update_layout(
             yaxis=dict(autorange="reversed"),
             xaxis=dict(title="Coefficient Weight"),
@@ -604,8 +711,12 @@ def render_performance_tab(pipeline, best_model_name, cv_results, X_test, y_test
 # ─── Live Analysis (Landing Page) ───────────────────────────────────────────
 
 EMOTION_EMOJI = {
-    "Sadness": "😢", "Joy": "😄", "Love": "❤️",
-    "Anger": "😠", "Fear": "😨", "Surprise": "😲",
+    "Sadness": "😢",
+    "Joy": "😄",
+    "Love": "❤️",
+    "Anger": "😠",
+    "Fear": "😨",
+    "Surprise": "😲",
 }
 
 
@@ -618,7 +729,10 @@ def render_inference_tab(pipeline):
     col_input, col_result = st.columns([1.1, 1])
 
     with col_input:
-        st.markdown('<div class="section-header">Emotion Predictor</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-header">Emotion Predictor</div>',
+            unsafe_allow_html=True,
+        )
         st.markdown(
             "<p style='color:#718096;font-size:0.82rem;margin-bottom:0.5rem'>"
             "Enter a Twitter-style message. The model predicts its primary emotion "
@@ -646,78 +760,93 @@ def render_inference_tab(pipeline):
             else:
                 with st.spinner("Running inference…"):
                     # Run prediction once and cache result in session_state
-                    st.session_state["inference_result"] = predict_emotion(pipeline, user_text)
+                    st.session_state["inference_result"] = predict_emotion(
+                        pipeline, user_text
+                    )
                     st.session_state["inference_text"] = user_text
 
     # ── Render result from session_state (persists across reruns) ──────────
-    result    = st.session_state.get("inference_result")
+    result = st.session_state.get("inference_result")
     last_text = st.session_state.get("inference_text", "")
 
     with col_result:
         if result:
-            emotion    = result["predicted_emotion"]
+            emotion = result["predicted_emotion"]
             confidence = result["confidence"]
-            is_oov     = result["is_oov"]
-            color      = EMOTION_COLORS.get(emotion, "#7C6FF7")
-            emoji      = EMOTION_EMOJI.get(emotion, "🤔")
+            is_oov = result["is_oov"]
+            color = EMOTION_COLORS.get(emotion, "#7C6FF7")
+            emoji = EMOTION_EMOJI.get(emotion, "🤔")
 
-            st.markdown(f"""
+            st.markdown(
+                f"""
             <div class="prediction-card">
               <div style='font-size:3.2rem;line-height:1.1'>{emoji}</div>
               <div class="prediction-emotion" style='color:{color}'>{emotion}</div>
               <div class="prediction-confidence">
                 Confidence: <strong style='color:{color}'>{confidence:.1%}</strong>
               </div>
-            </div>""", unsafe_allow_html=True)
+            </div>""",
+                unsafe_allow_html=True,
+            )
 
             if is_oov:
-                st.markdown("""
+                st.markdown(
+                    """
                 <div class="oov-warning">
                   ⚠️ <strong>Low Vocabulary Match</strong> — Most words were not seen
                   during training. The prediction may be unreliable.
-                </div>""", unsafe_allow_html=True)
+                </div>""",
+                    unsafe_allow_html=True,
+                )
         else:
-            st.markdown("""
+            st.markdown(
+                """
             <div style='padding:3rem 1.5rem; text-align:center; color:#4a5568;
                         border:1px dashed #2d3748; border-radius:14px;'>
               <div style='font-size:2.5rem;margin-bottom:0.8rem'>🧪</div>
               <div style='font-size:0.9rem'>Enter a message and click
               <strong>Analyse Emotion</strong><br>to see the prediction here.</div>
-            </div>""", unsafe_allow_html=True)
+            </div>""",
+                unsafe_allow_html=True,
+            )
 
     # ── Probability Distribution (rendered below both columns) ──────────────
     if result:
-        probs   = result["probabilities"]
+        probs = result["probabilities"]
         emotion = result["predicted_emotion"]
 
         st.markdown(
             f"<div class='section-header'>Probability Distribution · "
             f"<span style='color:#a0aec0;font-weight:400;font-size:0.9rem'>"
-            f"Input: <em>\"{last_text[:80]}{'…' if len(last_text) > 80 else ''}\""
+            f'Input: <em>"{last_text[:80]}{"…" if len(last_text) > 80 else ""}"'
             f"</em></span></div>",
             unsafe_allow_html=True,
         )
 
-        prob_df = pd.DataFrame({
-            "Emotion": list(probs.keys()),
-            "Probability": list(probs.values()),
-        }).sort_values("Probability", ascending=True)
+        prob_df = pd.DataFrame(
+            {
+                "Emotion": list(probs.keys()),
+                "Probability": list(probs.values()),
+            }
+        ).sort_values("Probability", ascending=True)
 
         colors_bar = [
             EMOTION_COLORS.get(e, "#7C6FF7") if e == emotion else "#2d3748"
             for e in prob_df["Emotion"]
         ]
 
-        fig_prob = go.Figure(go.Bar(
-            x=prob_df["Probability"],
-            y=prob_df["Emotion"],
-            orientation="h",
-            marker_color=colors_bar,
-            marker_line_width=0,
-            text=[f"{p:.1%}" for p in prob_df["Probability"]],
-            textposition="outside",
-            textfont=dict(size=12, color="#a0aec0"),
-        ))
+        fig_prob = go.Figure(
+            go.Bar(
+                x=prob_df["Probability"],
+                y=prob_df["Emotion"],
+                orientation="h",
+                marker_color=colors_bar,
+                marker_line_width=0,
+                text=[f"{p:.1%}" for p in prob_df["Probability"]],
+                textposition="outside",
+                textfont=dict(size=12, color="#a0aec0"),
+            )
+        )
         fig_prob.update_layout(
             xaxis=dict(range=[0, 1.15], title="Probability", tickformat=".0%"),
             yaxis=dict(title=None, tickfont=dict(size=11)),
@@ -743,12 +872,14 @@ def render_inference_tab(pipeline):
 
 # ─── Main Entry Point ─────────────────────────────────────────────────────────
 
+
 def main():
     # Sidebar (returns hyperparameters)
     max_features, C = render_sidebar()
 
     # Header
-    st.markdown("""
+    st.markdown(
+        """
     <div class="main-header">
       <div class="main-title">🧠 Emolyzer</div>
       <div class="main-subtitle">
@@ -756,7 +887,9 @@ def main():
         TF-IDF + Logistic Regression Pipeline
       </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # Load dataset
     with st.spinner("Loading dataset…"):
@@ -772,17 +905,21 @@ def main():
     # Train models and cross-validate
     with st.spinner("Running 5-Fold Cross Validation... this may take a moment."):
         try:
-            pipeline, best_model_name, cv_results, X_test, y_test = cached_train_and_cv(max_features, C)
+            pipeline, best_model_name, cv_results, X_test, y_test = cached_train_and_cv(
+                max_features, C
+            )
         except Exception as e:
             st.error(f"**Model Training Failed**\n\n{e}")
             st.stop()
 
     # Live Analysis is Tab 1 (landing tab) — most important user-facing feature
-    tab1, tab2, tab3 = st.tabs([
-        "  🔬  Live Analysis  ",
-        "  📊  Dataset & EDA  ",
-        "  📈  Model Performance  ",
-    ])
+    tab1, tab2, tab3 = st.tabs(
+        [
+            "  🔬  Live Analysis  ",
+            "  📊  Dataset & EDA  ",
+            "  📈  Model Performance  ",
+        ]
+    )
 
     with tab1:
         render_inference_tab(pipeline)

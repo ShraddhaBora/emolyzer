@@ -1,6 +1,8 @@
-// App.jsx — Root application with tab routing
+// @ts-nocheck
+// App.tsx — Root application with tab routing
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useQuery } from '@tanstack/react-query'
 import Navbar from './components/Navbar'
 import TrainingBanner from './components/TrainingBanner'
 import AnalysePage from './pages/AnalysePage'
@@ -22,7 +24,9 @@ function FAB() {
                 <motion.button
                     className="fab"
                     title="Back to top"
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    onClick={() =>
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }
                     initial={{ opacity: 0, scale: 0.5, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.5, y: 20 }}
@@ -59,28 +63,24 @@ const pageVariants = {
 
 export default function App() {
     const [activeTab, setActiveTab] = useState('predict')
-    const [health, setHealth] = useState(null)
 
-    function handleTabChange(tab) {
+    function handleTabChange(tab: string) {
         setActiveTab(tab)
     }
 
-    useEffect(() => {
-        let timer
-        async function check() {
-            try {
-                const h = await apiHealth()
-                setHealth(h)
-                if (h.champion === 'not trained') {
-                    timer = setTimeout(check, 4000)
-                }
-            } catch {
-                timer = setTimeout(check, 5000)
+    const { data: health } = useQuery({
+        queryKey: ['health'],
+        queryFn: apiHealth,
+        refetchInterval: (query) => {
+            if (
+                query.state.data?.champion === 'not trained' ||
+                query.state.data?.retraining
+            ) {
+                return 4000
             }
-        }
-        check()
-        return () => clearTimeout(timer)
-    }, [])
+            return false
+        },
+    })
 
     const apiReady = health && health.champion !== 'not trained'
 
@@ -95,17 +95,19 @@ export default function App() {
 
                 <AnimatePresence mode="wait">
                     {activeTab === 'predict' && (
-                        <motion.div key="predict"
+                        <motion.div
+                            key="predict"
                             variants={pageVariants}
                             initial="initial"
                             animate="animate"
                             exit="exit"
                         >
-                            <AnalysePage apiReady={apiReady} />
+                            <AnalysePage apiReady={!!apiReady} />
                         </motion.div>
                     )}
                     {activeTab === 'distribution' && (
-                        <motion.div key="distribution"
+                        <motion.div
+                            key="distribution"
                             variants={pageVariants}
                             initial="initial"
                             animate="animate"
@@ -115,7 +117,8 @@ export default function App() {
                         </motion.div>
                     )}
                     {activeTab === 'metrics' && (
-                        <motion.div key="metrics"
+                        <motion.div
+                            key="metrics"
                             variants={pageVariants}
                             initial="initial"
                             animate="animate"

@@ -6,15 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{ts,tsx,tsx,css}\" \"*.html\""
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "prettier": "^3.8.1",
     "typescript": "~5.9.3",
     "vite": "^7.3.1"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.21",
     "@vitejs/plugin-react": "^5.1.4",
     "framer-motion": "^12.34.3",
+    "react-hot-toast": "^2.6.0",
     "recharts": "^3.7.0"
   }
 }

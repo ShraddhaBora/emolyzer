@@ -10,14 +10,13 @@ from src.preprocessing import (
     mark_negations,
     NegationPreprocessor,
     CONTRACTION_MAP,
-    NEGATION_TRIGGERS,
 )
 
 
 # ─── expand_contractions ──────────────────────────────────────────────────────
 
-class TestExpandContractions:
 
+class TestExpandContractions:
     def test_dont_expanded(self):
         assert expand_contractions("I don't like this") == "i do not like this"
 
@@ -63,8 +62,8 @@ class TestExpandContractions:
 
 # ─── mark_negations ───────────────────────────────────────────────────────────
 
-class TestMarkNegations:
 
+class TestMarkNegations:
     def test_dont_like_marked(self):
         result = mark_negations("I don't like you")
         assert "NOT_like" in result
@@ -118,8 +117,8 @@ class TestMarkNegations:
 
 # ─── NegationPreprocessor (sklearn transformer) ───────────────────────────────
 
-class TestNegationPreprocessor:
 
+class TestNegationPreprocessor:
     @pytest.fixture
     def preprocessor(self):
         return NegationPreprocessor()
@@ -145,7 +144,7 @@ class TestNegationPreprocessor:
         result = preprocessor.transform(docs)
         assert len(result) == 3
         assert "NOT_like" in result[0]
-        assert "NOT_" not in result[1]   # positive sentence untouched
+        assert "NOT_" not in result[1]  # positive sentence untouched
         assert "NOT_stop" in result[2]
 
     def test_fit_transform_equivalent(self, preprocessor):

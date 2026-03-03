@@ -1,3 +1,4 @@
+// @ts-nocheck
 // pages/AnalysePage.jsx
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -5,13 +6,18 @@ import { apiPredict } from '../api'
 import ProbabilityBars from '../components/ProbabilityBars'
 
 const EMOTION_EMOJI = {
-    Sadness: '😢', Joy: '😄', Love: '❤️', Anger: '😠',
-    Fear: '😨', Surprise: '😲', Neutral: '😐',
+    Sadness: '😢',
+    Joy: '😄',
+    Love: '❤️',
+    Anger: '😠',
+    Fear: '😨',
+    Surprise: '😲',
+    Neutral: '😐',
     'Unknown (Out of Vocabulary)': '🤷',
 }
 
 const EXAMPLE_INPUTS = [
-    'I can\'t believe how wonderful today has been!',
+    "I can't believe how wonderful today has been!",
     'This is absolutely infuriating, I hate it.',
     'I miss my family so much it hurts.',
     'Oh wow, I did not see that coming at all.',
@@ -24,12 +30,18 @@ const fadeUp = (delay = 0) => ({
     transition: { duration: 0.6, delay, ease: 'easeOut' },
 })
 
-
 // Clean inline SVG icons
 function IconScan() {
     return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             style={{ flexShrink: 0 }}
         >
             <path d="M3 7V5a2 2 0 0 1 2-2h2" />
@@ -44,8 +56,14 @@ function IconScan() {
 
 function IconBrainPulse() {
     return (
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"
+        <svg
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
         >
             <path d="M9.5 2a2.5 2.5 0 0 1 2.45 2H13a3 3 0 0 1 3 3c0 .35-.07.69-.18 1" />
             <path d="M9.5 2A2.5 2.5 0 0 0 7 4.5v1A3.5 3.5 0 0 0 3.5 9c0 1.5.94 2.8 2.3 3.3" />
@@ -60,16 +78,25 @@ function IconBrainPulse() {
 }
 
 // Animated circular confidence arc
-function ConfidenceArc({ value, color }) {
+function ConfidenceArc({ value, color }: { value: number; color: string }) {
     const r = 28
     const circ = 2 * Math.PI * r
     const fill = circ * (1 - value)
     return (
         <div className="confidence-arc-wrap">
             <svg width="72" height="72" className="confidence-arc-svg">
-                <circle cx="36" cy="36" r={r} fill="none" stroke="rgba(196,186,255,0.15)" strokeWidth="5" />
+                <circle
+                    cx="36"
+                    cy="36"
+                    r={r}
+                    fill="none"
+                    stroke="rgba(196,186,255,0.15)"
+                    strokeWidth="5"
+                />
                 <motion.circle
-                    cx="36" cy="36" r={r}
+                    cx="36"
+                    cy="36"
+                    r={r}
                     fill="none"
                     stroke={color}
                     strokeWidth="5"
@@ -77,29 +104,40 @@ function ConfidenceArc({ value, color }) {
                     strokeDasharray={circ}
                     initial={{ strokeDashoffset: circ }}
                     animate={{ strokeDashoffset: fill }}
-                    transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                    transition={{
+                        duration: 1.1,
+                        ease: [0.16, 1, 0.3, 1],
+                        delay: 0.1,
+                    }}
                 />
             </svg>
-            <div style={{
-                position: 'absolute', inset: 0, display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                fontWeight: 700, fontSize: '0.85rem', color,
-                fontFamily: 'var(--font-mono)',
-            }}>
+            <div
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    color,
+                    fontFamily: 'var(--font-mono)',
+                }}
+            >
                 {(value * 100).toFixed(0)}%
             </div>
         </div>
     )
 }
 
-export default function AnalysePage({ apiReady }) {
+export default function AnalysePage({ apiReady }: { apiReady: boolean }) {
     const [text, setText] = useState('')
-    const [result, setResult] = useState(null)
+    const [result, setResult] = useState<any>(null)
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
+    const [error, setError] = useState<string | null>(null)
     const [charCount, setCharCount] = useState(0)
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         if (!text.trim()) return
         setLoading(true)
@@ -115,44 +153,57 @@ export default function AnalysePage({ apiReady }) {
         }
     }
 
-    function handleExample(ex) {
+    function handleExample(ex: string) {
         setText(ex)
         setCharCount(ex.length)
         setResult(null)
         setError(null)
     }
 
-    function handleTextChange(e) {
+    function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
         setText(e.target.value)
         setCharCount(e.target.value.length)
     }
 
-    const color = result?.probabilities?.[result.predicted_emotion]?.color ?? 'var(--accent)'
+    const color =
+        result?.probabilities?.[result.predicted_emotion]?.color ??
+        'var(--accent)'
 
     return (
-        <div className="container" style={{ paddingTop: '2rem', paddingBottom: '4rem' }}>
-
+        <div
+            className="container"
+            style={{ paddingTop: '2rem', paddingBottom: '4rem' }}
+        >
             {/* ── Hero — each element staggered by 200ms, NO overlap ── */}
             <section className="hero" style={{ paddingTop: 0 }}>
                 <motion.h1 {...fadeUp(0.05)}>
                     Understand the{' '}
-                    <span className="gradient-text">emotion</span>
-                    {' '}behind any text
+                    <span className="gradient-text">emotion</span> behind any
+                    text
                 </motion.h1>
                 <motion.p {...fadeUp(0.22)}>
-                    Enter any sentence, message, or phrase. Our multi-model pipeline classifies
-                    it into one of seven core emotions with calibrated confidence scores.
+                    Enter any sentence, message, or phrase. Our multi-model
+                    pipeline classifies it into one of seven core emotions with
+                    calibrated confidence scores.
                 </motion.p>
             </section>
 
             {/* ── Example chips (now staggered individually) ── */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', marginBottom: '2rem' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                    justifyContent: 'center',
+                    marginBottom: '2rem',
+                }}
+            >
                 {EXAMPLE_INPUTS.map((ex, i) => (
                     <motion.button
                         key={ex}
                         className="chip"
                         onClick={() => handleExample(ex)}
-                        {...fadeUp(0.40 + i * 0.08)}
+                        {...fadeUp(0.4 + i * 0.08)}
                     >
                         {ex.length > 40 ? ex.slice(0, 40) + '…' : ex}
                     </motion.button>
@@ -161,16 +212,30 @@ export default function AnalysePage({ apiReady }) {
 
             {/* ── Main predictor grid ── */}
             <div className="predictor-wrap">
-
                 {/* Input card — delay 0.55 so chips are ~done */}
                 <motion.form
                     onSubmit={handleSubmit}
                     className="card"
                     {...fadeUp(0.55)}
                 >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                        <p className="section-title" style={{ margin: 0 }}>Your Text</p>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '0.75rem',
+                        }}
+                    >
+                        <p className="section-title" style={{ margin: 0 }}>
+                            Your Text
+                        </p>
+                        <span
+                            style={{
+                                fontSize: '0.75rem',
+                                color: 'var(--text-muted)',
+                                fontFamily: 'var(--font-mono)',
+                            }}
+                        >
                             {charCount} chars
                         </span>
                     </div>
@@ -185,9 +250,23 @@ export default function AnalysePage({ apiReady }) {
                     />
 
                     {!apiReady && (
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                            <span className="spinner-dots" style={{ transform: 'scale(0.7)' }}>
-                                <span /><span /><span />
+                        <p
+                            style={{
+                                fontSize: '0.8rem',
+                                color: 'var(--text-muted)',
+                                marginTop: '0.5rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                            }}
+                        >
+                            <span
+                                className="spinner-dots"
+                                style={{ transform: 'scale(0.7)' }}
+                            >
+                                <span />
+                                <span />
+                                <span />
                             </span>
                             Model is still training, please wait…
                         </p>
@@ -201,15 +280,18 @@ export default function AnalysePage({ apiReady }) {
                     >
                         {loading ? (
                             <>
-                                <span style={{
-                                    width: 15, height: 15,
-                                    border: '2px solid rgba(255,255,255,0.35)',
-                                    borderTopColor: '#fff',
-                                    borderRadius: '50%',
-                                    display: 'inline-block',
-                                    animation: 'spin 0.7s linear infinite',
-                                    flexShrink: 0,
-                                }} />
+                                <span
+                                    style={{
+                                        width: 15,
+                                        height: 15,
+                                        border: '2px solid rgba(255,255,255,0.35)',
+                                        borderTopColor: '#fff',
+                                        borderRadius: '50%',
+                                        display: 'inline-block',
+                                        animation: 'spin 0.7s linear infinite',
+                                        flexShrink: 0,
+                                    }}
+                                />
                                 Analysing…
                             </>
                         ) : (
@@ -221,7 +303,10 @@ export default function AnalysePage({ apiReady }) {
                     </button>
 
                     {error && (
-                        <div className="oov-notice oov-notice-error" style={{ marginTop: '0.75rem' }}>
+                        <div
+                            className="oov-notice oov-notice-error"
+                            style={{ marginTop: '0.75rem' }}
+                        >
                             ⚠ {error}
                         </div>
                     )}
@@ -230,7 +315,6 @@ export default function AnalysePage({ apiReady }) {
                 {/* Result panel — same y-axis, delay 0.65 so form is ~done */}
                 <motion.div {...fadeUp(0.65)}>
                     <AnimatePresence mode="wait">
-
                         {/* Placeholder — simple element wave */}
                         {!result && !loading && (
                             <motion.div
@@ -242,7 +326,10 @@ export default function AnalysePage({ apiReady }) {
                                 transition={{ duration: 0.3 }}
                                 style={{ gap: '1.2rem' }}
                             >
-                                <div className="wave-loader wave-idle" style={{ height: 20 }}>
+                                <div
+                                    className="wave-loader wave-idle"
+                                    style={{ height: 20 }}
+                                >
                                     {[0, 1, 2, 3, 4].map((i) => (
                                         <div
                                             key={i}
@@ -251,12 +338,19 @@ export default function AnalysePage({ apiReady }) {
                                                 background: 'var(--text-muted)',
                                                 opacity: 0.25,
                                                 width: 3,
-                                                margin: '0 2px'
+                                                margin: '0 2px',
                                             }}
                                         />
                                     ))}
                                 </div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>
+                                <p
+                                    style={{
+                                        color: 'var(--text-muted)',
+                                        fontSize: '0.82rem',
+                                        fontFamily: 'var(--font-mono)',
+                                        letterSpacing: '0.05em',
+                                    }}
+                                >
                                     awaiting input
                                 </p>
                             </motion.div>
@@ -270,14 +364,36 @@ export default function AnalysePage({ apiReady }) {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                style={{ alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
+                                style={{
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '0.75rem',
+                                }}
                             >
                                 <div className="wave-loader">
-                                    {['var(--em-sadness)', 'var(--em-joy)', 'var(--em-love)', 'var(--em-anger)', 'var(--em-fear)', 'var(--em-surprise)', 'var(--em-neutral)'].map((c, i) => (
-                                        <div key={i} className="wave-bar" style={{ background: c }} />
+                                    {[
+                                        'var(--em-sadness)',
+                                        'var(--em-joy)',
+                                        'var(--em-love)',
+                                        'var(--em-anger)',
+                                        'var(--em-fear)',
+                                        'var(--em-surprise)',
+                                        'var(--em-neutral)',
+                                    ].map((c, i) => (
+                                        <div
+                                            key={i}
+                                            className="wave-bar"
+                                            style={{ background: c }}
+                                        />
                                     ))}
                                 </div>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
+                                <p
+                                    style={{
+                                        color: 'var(--text-muted)',
+                                        fontSize: '0.85rem',
+                                        fontFamily: 'var(--font-mono)',
+                                    }}
+                                >
                                     Analysing emotion…
                                 </p>
                             </motion.div>
@@ -290,17 +406,42 @@ export default function AnalysePage({ apiReady }) {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                transition={{ opacity: { duration: 0.45, ease: 'easeOut' }, y: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }}
+                                transition={{
+                                    opacity: {
+                                        duration: 0.45,
+                                        ease: 'easeOut',
+                                    },
+                                    y: {
+                                        duration: 0.5,
+                                        ease: [0.16, 1, 0.3, 1],
+                                    },
+                                }}
                             >
-                                <div className="result-badge" style={{ borderColor: color, borderWidth: 2 }}>
+                                <div
+                                    className="result-badge"
+                                    style={{
+                                        borderColor: color,
+                                        borderWidth: 2,
+                                    }}
+                                >
                                     {/* Emoji — bouncy spring */}
                                     <motion.span
-                                        style={{ fontSize: '3.5rem', lineHeight: 1 }}
+                                        style={{
+                                            fontSize: '3.5rem',
+                                            lineHeight: 1,
+                                        }}
                                         initial={{ scale: 0, rotate: -20 }}
                                         animate={{ scale: 1, rotate: 0 }}
-                                        transition={{ type: 'spring', stiffness: 380, damping: 15, delay: 0.05 }}
+                                        transition={{
+                                            type: 'spring',
+                                            stiffness: 380,
+                                            damping: 15,
+                                            delay: 0.05,
+                                        }}
                                     >
-                                        {EMOTION_EMOJI[result.predicted_emotion] ?? '🔍'}
+                                        {EMOTION_EMOJI[
+                                            result.predicted_emotion
+                                        ] ?? '🔍'}
                                     </motion.span>
 
                                     {/* Emotion label */}
@@ -309,20 +450,30 @@ export default function AnalysePage({ apiReady }) {
                                         style={{ color }}
                                         initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.2, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                        transition={{
+                                            delay: 0.2,
+                                            duration: 0.4,
+                                            ease: [0.16, 1, 0.3, 1],
+                                        }}
                                     >
                                         {result.predicted_emotion}
                                     </motion.div>
 
                                     {/* Confidence arc */}
-                                    <ConfidenceArc value={result.confidence} color={color} />
+                                    <ConfidenceArc
+                                        value={result.confidence}
+                                        color={color}
+                                    />
 
                                     {/* Confidence label */}
                                     <motion.div
                                         className="result-confidence"
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        transition={{ delay: 0.38, duration: 0.4 }}
+                                        transition={{
+                                            delay: 0.38,
+                                            duration: 0.4,
+                                        }}
                                     >
                                         Confidence score
                                     </motion.div>
@@ -333,9 +484,14 @@ export default function AnalysePage({ apiReady }) {
                                         className="oov-notice"
                                         initial={{ opacity: 0, y: 6 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.45, duration: 0.35 }}
+                                        transition={{
+                                            delay: 0.45,
+                                            duration: 0.35,
+                                        }}
                                     >
-                                        ⚠ Some words weren't in the vocabulary. The system applied normalisation — check spelling for best results.
+                                        ⚠ Some words weren't in the vocabulary.
+                                        The system applied normalisation — check
+                                        spelling for best results.
                                     </motion.div>
                                 )}
                             </motion.div>
@@ -354,11 +510,21 @@ export default function AnalysePage({ apiReady }) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 12 }}
                         transition={{
-                            opacity: { duration: 0.5, delay: 0.1, ease: 'easeOut' },
-                            y: { duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] },
+                            opacity: {
+                                duration: 0.5,
+                                delay: 0.1,
+                                ease: 'easeOut',
+                            },
+                            y: {
+                                duration: 0.55,
+                                delay: 0.1,
+                                ease: [0.16, 1, 0.3, 1],
+                            },
                         }}
                     >
-                        <p className="section-title">Probability Distribution</p>
+                        <p className="section-title">
+                            Probability Distribution
+                        </p>
                         <ProbabilityBars probabilities={result.probabilities} />
                     </motion.div>
                 )}

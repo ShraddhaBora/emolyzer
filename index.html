@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emolyzer - Emotion Analysis Research</title>
+    <!-- Add your favicon or a nice emoji icon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😄</text></svg>">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f8f9fc;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        /* The container for your app */
+        #app-container {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* Optional: Add a simple loading state */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- The Hugging Face Space URL from Step 107 -->
+    <iframe 
+        id="app-container"
+        src="https://shraddhabora-emolyzer.hf.space"
+        allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+        sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-downloads"
+    ></iframe>
+</body>
+</html>

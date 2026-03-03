@@ -1,8 +1,12 @@
-// components/TrainingBanner.jsx
+// components/TrainingBanner.tsx
 import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export default function TrainingBanner({ champion }) {
+interface TrainingBannerProps {
+    champion: string | null | undefined
+}
+
+export default function TrainingBanner({ champion }: TrainingBannerProps) {
     const ready = champion && champion !== 'not trained'
 
     return (
@@ -19,16 +23,31 @@ export default function TrainingBanner({ champion }) {
                 {ready ? (
                     <>
                         Selected Model:&nbsp;<strong>{champion}</strong>
-                        <span style={{ marginLeft: 'auto', fontSize: '0.75rem', opacity: 0.7, fontWeight: 400 }}>
+                        <span
+                            style={{
+                                marginLeft: 'auto',
+                                fontSize: '0.75rem',
+                                opacity: 0.7,
+                                fontWeight: 400,
+                            }}
+                        >
                             5-Fold CV Champion
                         </span>
                     </>
                 ) : (
                     <>
                         <span>Training pipeline</span>
-                        <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                        <span
+                            style={{
+                                display: 'flex',
+                                gap: 4,
+                                alignItems: 'center',
+                            }}
+                        >
                             <span className="spinner-dots">
-                                <span /><span /><span />
+                                <span />
+                                <span />
+                                <span />
                             </span>
                         </span>
                     </>

@@ -5,7 +5,6 @@ Unit tests for src/model_pipeline.py
 """
 
 import pytest
-import numpy as np
 import pandas as pd
 
 from src.model_pipeline import (
@@ -15,11 +14,11 @@ from src.model_pipeline import (
     get_feature_importance,
     predict_emotion,
     EMOTION_MAP,
-    EMOTION_LABELS,
 )
 
 
 # ─── Fixtures ─────────────────────────────────────────────────────────────────
+
 
 @pytest.fixture
 def dummy_df():
@@ -87,8 +86,8 @@ def trained_artifacts(dummy_df):
 
 # ─── build_pipeline ───────────────────────────────────────────────────────────
 
-class TestBuildPipeline:
 
+class TestBuildPipeline:
     def test_pipeline_has_three_steps(self):
         p = build_pipeline()
         assert len(p.steps) == 3
@@ -115,8 +114,8 @@ class TestBuildPipeline:
 
 # ─── train_and_cross_validate ──────────────────────────────────────────────────────────────
 
-class TestTrainAndCrossValidate:
 
+class TestTrainAndCrossValidate:
     def test_returns_five_items(self, dummy_df):
         result = train_and_cross_validate(dummy_df, max_features=500)
         assert len(result) == 5
@@ -125,6 +124,7 @@ class TestTrainAndCrossValidate:
         pipeline, *_ = train_and_cross_validate(dummy_df, max_features=500)
         # A fitted pipeline can transform without raising NotFittedError
         from sklearn.exceptions import NotFittedError
+
         try:
             pipeline.predict(["test input"])
         except NotFittedError:
@@ -136,21 +136,27 @@ class TestTrainAndCrossValidate:
         assert len(y_test) > 0
 
     def test_cv_results_is_dict(self, dummy_df):
-        _, best_model_name, cv_results, _, _ = train_and_cross_validate(dummy_df, max_features=500)
+        _, best_model_name, cv_results, _, _ = train_and_cross_validate(
+            dummy_df, max_features=500
+        )
         assert isinstance(cv_results, dict)
         assert isinstance(best_model_name, str)
 
 
 # ─── evaluate_model ───────────────────────────────────────────────────────────
 
-class TestEvaluateModel:
 
+class TestEvaluateModel:
     def test_returns_expected_keys(self, trained_artifacts):
         pipeline, X_test, y_test = trained_artifacts
         result = evaluate_model(pipeline, X_test, y_test)
         expected_keys = {
-            "accuracy", "macro_f1", "report_dict",
-            "report_str", "confusion_matrix", "class_names",
+            "accuracy",
+            "macro_f1",
+            "report_dict",
+            "report_str",
+            "confusion_matrix",
+            "class_names",
         }
         assert expected_keys.issubset(result.keys())
 
@@ -179,8 +185,8 @@ class TestEvaluateModel:
 
 # ─── get_feature_importance ───────────────────────────────────────────────────
 
-class TestGetFeatureImportance:
 
+class TestGetFeatureImportance:
     def test_returns_dict(self, trained_artifacts):
         pipeline, _, _ = trained_artifacts
         result = get_feature_importance(pipeline, top_n=5)
@@ -190,7 +196,9 @@ class TestGetFeatureImportance:
         pipeline, _, _ = trained_artifacts
         result = get_feature_importance(pipeline, top_n=5)
         # Should have an entry for each fitted class
-        expected_emotions = {EMOTION_MAP[c] for c in pipeline.named_steps["clf"].classes_}
+        expected_emotions = {
+            EMOTION_MAP[c] for c in pipeline.named_steps["clf"].classes_
+        }
         assert set(result.keys()) == expected_emotions
 
     def test_top_n_features_per_class(self, trained_artifacts):
@@ -209,8 +217,8 @@ class TestGetFeatureImportance:
 
 # ─── predict_emotion ──────────────────────────────────────────────────────────
 
-class TestPredictEmotion:
 
+class TestPredictEmotion:
     def test_returns_expected_keys(self, trained_artifacts):
         pipeline, _, _ = trained_artifacts
         result = predict_emotion(pipeline, "I feel so happy today")
@@ -220,7 +228,10 @@ class TestPredictEmotion:
     def test_predicted_emotion_is_known(self, trained_artifacts):
         pipeline, _, _ = trained_artifacts
         result = predict_emotion(pipeline, "I feel so happy today")
-        assert result["predicted_emotion"] in EMOTION_MAP.values() or result["predicted_emotion"] == "Unknown (Out of Vocabulary)"
+        assert (
+            result["predicted_emotion"] in EMOTION_MAP.values()
+            or result["predicted_emotion"] == "Unknown (Out of Vocabulary)"
+        )
 
     def test_confidence_in_range(self, trained_artifacts):
         pipeline, _, _ = trained_artifacts

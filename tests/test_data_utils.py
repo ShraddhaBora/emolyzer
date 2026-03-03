@@ -4,10 +4,8 @@ test_data_utils.py
 Unit tests for src/data_utils.py
 """
 
-import os
 import pytest
 import pandas as pd
-import tempfile
 
 from src.data_utils import (
     load_and_validate,
@@ -31,6 +29,7 @@ Feeling joyful and alive,1
 Deep sadness fills me,0
 """
 
+
 @pytest.fixture
 def valid_csv(tmp_path):
     path = tmp_path / "text.csv"
@@ -46,8 +45,8 @@ def valid_df(valid_csv):
 
 # ─── load_and_validate ────────────────────────────────────────────────────────
 
-class TestLoadAndValidate:
 
+class TestLoadAndValidate:
     def test_loads_successfully(self, valid_csv):
         df, meta = load_and_validate(valid_csv)
         assert isinstance(df, pd.DataFrame)
@@ -101,8 +100,8 @@ class TestLoadAndValidate:
 
 # ─── class_distribution ───────────────────────────────────────────────────────
 
-class TestClassDistribution:
 
+class TestClassDistribution:
     def test_returns_dataframe(self, valid_df):
         result = class_distribution(valid_df)
         assert isinstance(result, pd.DataFrame)
@@ -118,8 +117,8 @@ class TestClassDistribution:
 
 # ─── text_length_stats ────────────────────────────────────────────────────────
 
-class TestTextLengthStats:
 
+class TestTextLengthStats:
     def test_returns_dataframe(self, valid_df):
         result = text_length_stats(valid_df)
         assert isinstance(result, pd.DataFrame)
@@ -132,8 +131,8 @@ class TestTextLengthStats:
 
 # ─── sample_rows ──────────────────────────────────────────────────────────────
 
-class TestSampleRows:
 
+class TestSampleRows:
     def test_returns_n_rows(self, valid_df):
         result = sample_rows(valid_df, n=3)
         assert len(result) == 3

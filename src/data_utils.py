@@ -7,7 +7,6 @@ computation for the Emolyzer application.
 
 import os
 import pandas as pd
-import numpy as np
 
 # ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -18,21 +17,28 @@ DATASET_PATH = os.path.join(os.path.dirname(_BASE), "merged_text.csv.gz")
 REQUIRED_COLUMNS = {"text", "label"}
 
 EMOTION_MAP = {
-    0: "Sadness", 1: "Joy", 2: "Love", 3: "Anger", 4: "Fear", 5: "Surprise", 6: "Neutral"
+    0: "Sadness",
+    1: "Joy",
+    2: "Love",
+    3: "Anger",
+    4: "Fear",
+    5: "Surprise",
+    6: "Neutral",
 }
 
 EMOTION_COLORS = {
-    "Sadness":  "#A7C5EB", 
-    "Joy":      "#F9E6A1",
-    "Love":     "#FBB6D9", 
-    "Anger":    "#F9AFA1",
-    "Fear":     "#CFB9FA", 
+    "Sadness": "#A7C5EB",
+    "Joy": "#F9E6A1",
+    "Love": "#FBB6D9",
+    "Anger": "#F9AFA1",
+    "Fear": "#CFB9FA",
     "Surprise": "#A3EBB1",
-    "Neutral":  "#C5CBD3"
+    "Neutral": "#C5CBD3",
 }
 
 
 # ─── Loading & Validation ─────────────────────────────────────────────────────
+
 
 def load_and_validate(path: str = DATASET_PATH) -> pd.DataFrame:
     """
@@ -97,6 +103,7 @@ def load_and_validate(path: str = DATASET_PATH) -> pd.DataFrame:
 
 # ─── EDA Helpers ─────────────────────────────────────────────────────────────
 
+
 def class_distribution(df: pd.DataFrame) -> pd.DataFrame:
     """
     Returns a DataFrame with emotion counts and percentage distribution.
@@ -108,7 +115,9 @@ def class_distribution(df: pd.DataFrame) -> pd.DataFrame:
     # Maintain consistent ordering by label value
     order = list(EMOTION_MAP.values())
     counts["_order"] = counts["Emotion"].map({e: i for i, e in enumerate(order)})
-    counts = counts.sort_values("_order").drop(columns=["_order"]).reset_index(drop=True)
+    counts = (
+        counts.sort_values("_order").drop(columns=["_order"]).reset_index(drop=True)
+    )
     return counts
 
 
@@ -136,5 +145,6 @@ def sample_rows(df: pd.DataFrame, n: int = 8, random_state: int = 42) -> pd.Data
         .sample(n=min(n, len(df)), random_state=random_state)
         .reset_index(drop=True)
     )
+
 
 # Force reload for dict color changes
