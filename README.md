@@ -1,29 +1,37 @@
-# Emolyzer
+# Emolyzer: Advanced Emotion Classification Platform
 
-Emolyzer is an advanced emotion analysis platform utilizing a multi-model NLP pipeline to classify text into core emotional states. Engineered with a scalable React frontend and a modular FastAPI backend, the platform provides a robust, research-grade interface designed for real-time sentiment extraction.
+Emolyzer is a comprehensive, full-stack machine learning platform designed to classify natural language text into core emotional states. Engineered with a scalable React frontend and a modular FastAPI backend, the platform provides a robust, research-grade interface designed for real-time sentiment extraction and analysis.
+
+## Overview
+
+The system evaluates text to identify seven distinct emotions: Sadness, Joy, Love, Anger, Fear, Surprise, and Neutral. It handles complex linguistic nuances such as double negations and high-intensity signal boosting, making it highly effective for unstructured data like social media posts or conversational text.
 
 ## Core Features
 
-- **Multi-Model Analysis**: Evaluates text using Logistic Regression, Naive Bayes, and Support Vector Machines equipped with Platt scaling for probability calibration.
-- **Deep Linguistic Pipeline**: Incorporates conjunction-aware negation marking and high-intensity signal boosting for accurate contextual understanding.
-- **Persistent Data Tracking**: Integrates a local SQLite database with SQLAlchemy ORM to automatically track dataset metadata and model performance over time.
-- **Academic Aesthetic**: Features a clean, minimalist UI utilizing a soft pastel color palette, with smooth, staggered transitions provided natively by Framer Motion.
-- **Enhanced Developer Experience**: Built with fully defined TypeScript interfaces for API validation, Dockerized environment orchestration, and automated code formatting with Prettier and Ruff.
+- **Multi-Model Machine Learning Engine**: Evaluates text using Logistic Regression, Naive Bayes, and Support Vector Machines. It comes equipped with Platt scaling for precise probability calibration, ensuring confidence scores are statistically sound.
+- **Deep Linguistic Processing Pipeline**: Incorporates conjunction-aware negation marking (e.g., handling complex structures like "I am not happy, but I will be okay") and high-intensity signal boosting for accurate contextual understanding.
+- **Asynchronous Background Retraining**: Allows users to upload custom datasets to retrain the model on the fly. Heavy training operations are delegated to background workers to prevent blocking the main API event loop.
+- **Persistent Data Tracking**: Integrates a local SQLite database utilizing the SQLAlchemy ORM to automatically track dataset metadata, cross-validation metrics, and model performance over time.
+- **Modern User Interface**: Features a clean, academic aesthetic utilizing a soft pastel color palette, with smooth, staggered transitions provided natively by Framer Motion.
 
-## System Architecture
+## Technology Stack
 
-The repository is structured to separate concerns, allowing for independent scaling and maintenance of the frontend presentation and backend machine learning logic:
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript and Vite for rapid module replacement and building.
+- **State Management**: TanStack Query (React Query) for optimized server-state synchronization and caching.
+- **Visuals and UI**: Framer Motion for seamless micro-animations; Recharts for live performance and distribution visualizations.
 
-- **`frontend/`**: The client-side React application built with Vite, TypeScript, React Query (for efficient server-state management), Framer Motion, and Recharts.
-- **`routers/`**: The backend API layer, consisting of modularized FastAPI routers decoupling the prediction, dataset management, and model handling endpoints.
-- **`src/`**: The core Python package containing logic for NLP preprocessing, database connection mapping (`database.py`, `models_db.py`), and machine learning model training pipelines.
-- **`models/`**: The storage directory where persisted champion models and their associated evaluation metadata are versioned and saved.
+### Backend Architecture
+- **API Framework**: FastAPI (Python) for high-performance, asynchronous REST endpoint generation.
+- **Database and ORM**: SQLite paired with SQLAlchemy for persistent metric and dataset storage.
+- **Machine Learning**: Scikit-Learn, Pandas, and custom NLP pipelines utilizing TF-IDF vectorization.
+- **Performance**: Uvicorn ASGI server, SlowAPI for endpoint rate limiting, and Pydantic for rigid request and response model validation.
 
 ## Getting Started
 
-### Quick Start with Docker
+### Quick Start with Docker (Recommended)
 
-The most straightforward method to run the complete stack is through Docker Compose:
+The most straightforward method to run the complete stack is through Docker Compose, which builds the necessary containers for both the client and the server natively.
 
 ```bash
 docker compose up --build
@@ -56,16 +64,18 @@ npm install
 npm run dev
 ```
 
+## Research Methodology
+
+The classification system leverages a stratified 5-fold cross-validation approach on a combined text corpus consisting of approximately 470,000 samples gathered from various public datasets (including Reddit, Twitter, and DAIR-AI).
+
+During preprocessing, the system generates a TF-IDF matrix using unigrams and bigrams. The models are trained and calibrated to map detected emotional signals to the seven core classes. The pipeline natively filters out URLs, user mentions, and special characters while preserving punctuation that carries emotional weight, such as exclamation marks.
+
 ## Development and Contribution
 
 To maintain code quality across the repository, the project relies on specific formatting and linting tools.
 
-- **Frontend**: Execute `npm run format` to apply Prettier formatting.
-- **Backend**: Execute `python -m ruff format . && python -m ruff check .` to format and check the Python codebase.
-
-## Research Methodology
-
-The classification system leverages a stratified 5-fold cross-validation approach on a combined text corpus consisting of approximately 470,000 samples gathered from Reddit, Twitter, and DAIR-AI datasets. It maps detected emotional signals to seven core classes: Sadness, Joy, Love, Anger, Fear, Surprise, and Neutral.
+- **Frontend Configuration**: Execute `npm run format` to apply Prettier formatting.
+- **Backend Configuration**: Execute `python -m ruff format . && python -m ruff check .` to format and check the Python codebase.
 
 ## Testing
 
