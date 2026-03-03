@@ -1,50 +1,54 @@
 # Emolyzer
 
-Emolyzer is an emotion analysis platform that uses a multi-model NLP pipeline to classify text into core emotional states. I built this with a modern React frontend (using TypeScript and React Query) and a modular FastAPI backend (utilizing SQLAlchemy and rate limiting). The goal is to provide a clean, research-grade interface for real-time sentiment extraction.
+Emolyzer is an advanced emotion analysis platform utilizing a multi-model NLP pipeline to classify text into core emotional states. Engineered with a scalable React frontend and a modular FastAPI backend, the platform provides a robust, research-grade interface designed for real-time sentiment extraction.
 
-## Features
+## Core Features
 
-- Multi-Model Analysis: Evaluates text using Logistic Regression, Naive Bayes, and Support Vector Machines with Platt scaling.
-- Deep Linguistic Pipeline: Includes conjunction-aware negation marking and high-intensity signal boosting.
-- Persistent Data Tracking: A local SQLite database automatically tracks dataset metadata and analysis over time.
-- Academic Aesthetic: Features a minimalist UI with a soft pastel palette and smooth, staggered transitions provided natively by Framer Motion.
-- Developer Experience: Includes fully typed APIs, Dockerized environment configuration, and automated code formatting with Prettier and Ruff.
+- **Multi-Model Analysis**: Evaluates text using Logistic Regression, Naive Bayes, and Support Vector Machines equipped with Platt scaling for probability calibration.
+- **Deep Linguistic Pipeline**: Incorporates conjunction-aware negation marking and high-intensity signal boosting for accurate contextual understanding.
+- **Persistent Data Tracking**: Integrates a local SQLite database with SQLAlchemy ORM to automatically track dataset metadata and model performance over time.
+- **Academic Aesthetic**: Features a clean, minimalist UI utilizing a soft pastel color palette, with smooth, staggered transitions provided natively by Framer Motion.
+- **Enhanced Developer Experience**: Built with fully defined TypeScript interfaces for API validation, Dockerized environment orchestration, and automated code formatting with Prettier and Ruff.
 
-## Project Structure
+## System Architecture
 
-- frontend/: React application using Vite, TypeScript, React Query, Framer Motion, and Recharts.
-- routers/: Modularized FastAPI routers for decoupled predictions, datasets, and model endpoints.
-- src/: Core logic for preprocessing, SQLite connection mapping (database.py, models_db.py), and model training.
-- models/: Where the persisted champion models and evaluation metadata are saved per version.
+The repository is structured to separate concerns, allowing for independent scaling and maintenance of the frontend presentation and backend machine learning logic:
 
-## Running the Project
+- **`frontend/`**: The client-side React application built with Vite, TypeScript, React Query (for efficient server-state management), Framer Motion, and Recharts.
+- **`routers/`**: The backend API layer, consisting of modularized FastAPI routers decoupling the prediction, dataset management, and model handling endpoints.
+- **`src/`**: The core Python package containing logic for NLP preprocessing, database connection mapping (`database.py`, `models_db.py`), and machine learning model training pipelines.
+- **`models/`**: The storage directory where persisted champion models and their associated evaluation metadata are versioned and saved.
 
-The easiest way to get the stack running is by using Docker Compose:
+## Getting Started
+
+### Quick Start with Docker
+
+The most straightforward method to run the complete stack is through Docker Compose:
 
 ```bash
 docker compose up --build
 ```
 
-This starts both the backend API on port 8000 and the React frontend on port 5173. Hot-reloading is enabled for an optimized development workflow.
+This command provisions and starts both the backend API on port `8000` and the React frontend on port `5173`. Hot-reloading is configured by default to ensure an optimized development workflow.
 
 ### Local Installation without Docker
 
-If you prefer to run it locally without Docker, follow these steps:
+If you prefer to run the components independently on your local machine, follow the steps below:
 
-#### 1. Start the Backend
+#### 1. Start the Backend API
 
-Create a virtual environment and install the required dependencies:
+First, create a virtual environment and install the required Python dependencies:
 
 ```bash
 pip install -r requirements.txt
 pip install slowapi sqlalchemy pydantic-settings ruff
 
-uvicorn api:app --reload --port 8000
+python -m uvicorn api:app --reload --port 8000
 ```
 
-#### 2. Start the Frontend
+#### 2. Start the Frontend Application
 
-Navigate to the frontend directory, install the packages, and start the development server:
+Next, navigate to the frontend directory, install the Node packages, and start the Vite development server:
 
 ```bash
 cd frontend
@@ -52,18 +56,20 @@ npm install
 npm run dev
 ```
 
-## Formatting and Linting
+## Development and Contribution
 
-- Frontend: Run `npm run format` (uses Prettier).
-- Backend: Run `python -m ruff format . && python -m ruff check .`
+To maintain code quality across the repository, the project relies on specific formatting and linting tools.
 
-## Methodology
+- **Frontend**: Execute `npm run format` to apply Prettier formatting.
+- **Backend**: Execute `python -m ruff format . && python -m ruff check .` to format and check the Python codebase.
 
-The system leverages a stratified 5-fold cross-validation approach on a combined corpus of roughly 470K samples from Reddit, Twitter, and DAIR-AI datasets. It maps these emotional signals to 7 core classes: Sadness, Joy, Love, Anger, Fear, Surprise, and Neutral.
+## Research Methodology
 
-## Running Tests
+The classification system leverages a stratified 5-fold cross-validation approach on a combined text corpus consisting of approximately 470,000 samples gathered from Reddit, Twitter, and DAIR-AI datasets. It maps detected emotional signals to seven core classes: Sadness, Joy, Love, Anger, Fear, Surprise, and Neutral.
 
-To execute the unit tests, use pytest:
+## Testing
+
+To verify the integrity of the data processing and machine learning pipelines, run the included test suite with pytest:
 
 ```bash
 pytest tests/
