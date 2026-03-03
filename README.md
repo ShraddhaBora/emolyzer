@@ -1,4 +1,17 @@
-# Emolyzer: Advanced Emotion Classification Platform
+<div align="center">
+  <h1>🧠 Emolyzer</h1>
+  <p><b>Advanced Emotion Classification Platform</b></p>
+  
+  <p>
+    <img alt="Python" src="https://img.shields.io/badge/python-3.9+-blue.svg">
+    <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi">
+    <img alt="React" src="https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB">
+    <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white">
+    <img alt="Docker" src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white">
+  </p>
+</div>
+
+<br/>
 
 Emolyzer is a comprehensive, full-stack machine learning platform designed to classify natural language text into core emotional states. Engineered with a scalable React frontend and a modular FastAPI backend, the platform provides a robust, research-grade interface designed for real-time sentiment extraction and analysis.
 
@@ -26,6 +39,26 @@ The system evaluates text to identify seven distinct emotions: Sadness, Joy, Lov
 - **Database and ORM**: SQLite paired with SQLAlchemy for persistent metric and dataset storage.
 - **Machine Learning**: Scikit-Learn, Pandas, and custom NLP pipelines utilizing TF-IDF vectorization.
 - **Performance**: Uvicorn ASGI server, SlowAPI for endpoint rate limiting, and Pydantic for rigid request and response model validation.
+
+## System Architecture
+
+```mermaid
+graph TD
+    Client[React/Vite Frontend] -->|REST API Calls| API[FastAPI Backend]
+    
+    subgraph Emolyzer Backend
+        API -->|Predict| ML[Machine Learning Pipeline]
+        API -->|Manage| DB[(SQLite Database)]
+        
+        ML -->|Inference/Retrain| Models[Persisted Models]
+        DB -->|Datasets & Metrics| Models
+    end
+    
+    style Client fill:#61DAFB,stroke:#333,stroke-width:2px,color:#000
+    style API fill:#009485,stroke:#333,stroke-width:2px,color:#fff
+    style ML fill:#f9a826,stroke:#333,stroke-width:2px,color:#000
+    style DB fill:#5c6bc0,stroke:#333,stroke-width:2px,color:#fff
+```
 
 ## Getting Started
 
