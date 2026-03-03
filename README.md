@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🧠 Emolyzer</h1>
+  <h1> Emolyzer</h1>
   <p><b>Advanced Emotion Classification Platform</b></p>
   
   <p>
